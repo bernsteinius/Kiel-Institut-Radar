@@ -34,7 +34,11 @@ export default async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Läuft auf allen Seiten außer statischen Assets und /api/cron
-  // (der Cron-Job wird separat über ein Secret geschützt, nicht über die Session).
-  matcher: ["/((?!api/cron|_next/static|_next/image|favicon.ico).*)"],
+  // Läuft auf allen Seiten außer statischen Assets (inkl. Dateien aus /public,
+  // z.B. Logo) und /api/cron (der Cron-Job wird separat über ein Secret
+  // geschützt, nicht über die Session). Statische Assets müssen auch auf der
+  // Login-Seite selbst ladbar sein, bevor eine Session existiert.
+  matcher: [
+    "/((?!api/cron|_next/static|_next/image|.*\\.(?:svg|png|jpg|jpeg|ico|webp|gif)$).*)",
+  ],
 };

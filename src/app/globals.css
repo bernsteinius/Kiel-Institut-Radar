@@ -31,3 +31,14 @@ body {
 .fc .fc-daygrid-day-top {
   justify-content: center;
 }
+
+/* FullCalendar-Buttons (Woche/Monat/..., Navigation) auf Kiel-Blau statt
+   FullCalendars grauem Standard-Grau umstellen. */
+.fc {
+  --fc-button-bg-color: var(--kiel-blue);
+  --fc-button-border-color: var(--kiel-blue);
+  --fc-button-hover-bg-color: #143c96;
+  --fc-button-hover-border-color: #143c96;
+  --fc-button-active-bg-color: #0f2f77;
+  --fc-button-active-border-color: #0f2f77;
+}

@@ -18,9 +18,6 @@ export default function Home() {
               <h1 className="text-xl font-semibold text-slate-900">
                 Kiel Institut Radar
               </h1>
-              <p className="text-sm text-slate-500">
-                EU, NATO, FED, IWF/Weltbank, G7 und weitere wirtschaftspolitische Termine
-              </p>
             </div>
           </div>
           <form action={logout}>
