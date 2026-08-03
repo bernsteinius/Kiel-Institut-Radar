@@ -6,6 +6,7 @@ import { ifwEventsSource } from "./ifw-events";
 import { euCouncilSource } from "./eu-council";
 import { g7g20Source } from "./g7-g20";
 import { annualConferencesSource } from "./annual-conferences";
+import { topicsSource } from "./topics";
 
 export type { RawEvent, EventSource } from "./types";
 
@@ -31,4 +32,5 @@ export const sources = [
   euCouncilSource,
   g7g20Source,
   annualConferencesSource,
+  topicsSource,
 ];

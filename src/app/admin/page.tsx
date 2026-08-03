@@ -31,12 +31,20 @@ export default async function AdminPage() {
               Vom täglichen Job vorgeschlagene Ereignisse. Prüfen und freigeben, bevor sie im Kalender erscheinen.
             </p>
           </div>
-          <Link
-            href="/admin/neu"
-            className="shrink-0 rounded-md bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700"
-          >
-            + Termin anlegen
-          </Link>
+          <div className="flex shrink-0 gap-3">
+            <Link
+              href="/themen"
+              className="rounded-md bg-[#194abb] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#143c96]"
+            >
+              + Neues Suchthema
+            </Link>
+            <Link
+              href="/admin/neu"
+              className="rounded-md bg-[#ff6a00] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#e05f00]"
+            >
+              + Termin anlegen
+            </Link>
+          </div>
         </div>
 
         {drafts.length === 0 && (
