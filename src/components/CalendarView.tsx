@@ -29,6 +29,11 @@ export default function CalendarView() {
           plugins={[dayGridPlugin, timeGridPlugin, multiMonthPlugin]}
           initialView="multiMonthThree"
           views={{
+            multiMonthTwo: {
+              type: "multiMonth",
+              duration: { months: 2 },
+              multiMonthMaxColumns: 2,
+            },
             multiMonthThree: {
               type: "multiMonth",
               duration: { months: 3 },
@@ -38,7 +43,13 @@ export default function CalendarView() {
           headerToolbar={{
             left: "prev,next today",
             center: "title",
-            right: "multiMonthThree,dayGridMonth,timeGridWeek",
+            right: "timeGridWeek,dayGridMonth,multiMonthTwo,multiMonthThree",
+          }}
+          buttonText={{
+            week: "Woche",
+            month: "Monat",
+            multiMonthTwo: "2 Monate",
+            multiMonthThree: "3 Monate",
           }}
           locale="de"
           firstDay={1}
