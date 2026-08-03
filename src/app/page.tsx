@@ -16,8 +16,19 @@ export default function Home() {
               height={49}
             />
             <div className="hidden h-10 w-px bg-slate-300 sm:block" />
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
-              Kiel Institut <span className="text-[#ff6a00]">Radar</span>
+            <h1 className="flex items-center text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+              Kiel Institut{" "}
+              <span className="ml-2 inline-flex items-center gap-1.5 text-[#ff6a00]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/radar-icon.svg"
+                  alt=""
+                  width={28}
+                  height={28}
+                  className="h-6 w-6 sm:h-7 sm:w-7"
+                />
+                Radar
+              </span>
             </h1>
           </div>
           <div className="flex flex-wrap items-center gap-3">

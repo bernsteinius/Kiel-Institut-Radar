@@ -21,24 +21,6 @@ body {
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
 
-/* Radar-Motiv als dezentes Hintergrundbild auf jeder Seite (Kiel-Institut-
-   Farben, sehr geringe Deckkraft). Liegt fixiert ÜBER dem Seiteninhalt
-   (die farbigen Seiten-Hintergründe sind sonst deckend und würden ein
-   dahinterliegendes Bild komplett verdecken), aber ohne Klick-Interaktion,
-   damit nichts verschoben oder blockiert wird. */
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  pointer-events: none;
-  background-image: url("/radar-bg.svg");
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: min(85vw, 1000px);
-  opacity: 0.06;
-}
-
 /* Kiel Institut Markenfarben (aus kielinstitut.de: --color-primary/--color-secondary) */
 :root {
   --kiel-orange: #ff6a00;
