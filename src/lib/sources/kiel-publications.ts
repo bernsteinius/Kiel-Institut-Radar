@@ -1,5 +1,5 @@
 import type { EventSource, RawEvent } from "./types";
-import { PUBLICATION_TOPICS, detectHeuristicTopics } from "@/lib/publication-topics";
+import { PUBLICATION_TOPICS, SOURCE_TOPIC_ALIASES, detectHeuristicTopics } from "@/lib/publication-topics";
 
 const BASE_URL = "https://www.kielinstitut.de/de/publikationen";
 
@@ -65,7 +65,8 @@ function parseTopics(html: string): string[] {
   const regex = /<h3 class="basic-teaser__headline h2">([^<]+)<\/h3>/g;
   let match: RegExpExecArray | null;
   while ((match = regex.exec(section))) {
-    const topic = match[1].trim();
+    const rawTopic = match[1].trim();
+    const topic = SOURCE_TOPIC_ALIASES[rawTopic] ?? rawTopic;
     if (PUBLICATION_TOPICS.includes(topic) && !topics.includes(topic)) {
       topics.push(topic);
     }

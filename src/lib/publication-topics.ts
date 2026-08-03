@@ -2,7 +2,7 @@
 // Jede Publikation kann von dort mit einem oder mehreren dieser Themen
 // verknüpft sein (siehe "Themen"-Sektion auf der jeweiligen Publikationsseite).
 const OFFICIAL_TOPICS: string[] = [
-  "Krieg gegen die Ukraine",
+  "Russland/Ukraine",
   "Industriepolitik",
   "Internationaler Handel",
   "Afrika",
@@ -11,6 +11,13 @@ const OFFICIAL_TOPICS: string[] = [
   "Konjunktur",
   "Wirtschaftspolitik in Deutschland",
 ];
+
+// Die Original-Themenbezeichnung von kielinstitut.de weicht von unserer
+// eigenen Beschriftung ab - beim Scrapen wird der Original-Text hierüber auf
+// unseren kanonischen Namen abgebildet.
+export const SOURCE_TOPIC_ALIASES: Record<string, string> = {
+  "Krieg gegen die Ukraine": "Russland/Ukraine",
+};
 
 // Zusätzliche, von uns definierte Themen ohne eigene Themenseite auf
 // kielinstitut.de - werden heuristisch anhand des Titels erkannt (siehe
