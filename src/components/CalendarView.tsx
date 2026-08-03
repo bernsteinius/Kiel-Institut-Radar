@@ -182,7 +182,7 @@ export default function CalendarView() {
 
         <div>
           <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
-            Themen (nur Publikationen)
+            Kiel Institut Publikationsthemen
           </p>
           <div className="flex flex-wrap gap-2">
             {PUBLICATION_TOPICS.map((topic) => {
