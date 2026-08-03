@@ -9,11 +9,19 @@ export default function LoginPage() {
   const [state, formAction, pending] = useActionState(login, initialState);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
+    <div className="flex min-h-screen items-center justify-center bg-[#ffeee2] px-4">
       <form
         action={formAction}
         className="w-full max-w-sm rounded-lg border border-slate-200 bg-white p-8 shadow-sm"
       >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/kiel-institut-logo.svg"
+          alt="Kiel Institut Logo"
+          width={140}
+          height={49}
+          className="mb-4"
+        />
         <h1 className="mb-1 text-lg font-semibold text-slate-900">
           Kiel Institut Radar
         </h1>

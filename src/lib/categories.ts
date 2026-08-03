@@ -11,7 +11,7 @@ export const CATEGORY_INFO: Record<EventCategory, CategoryInfo> = {
   SECURITY_DEFENSE: { label: "Sicherheit & Verteidigung", color: "#7c3aed" },
   INSTITUTIONS: { label: "Institutionen (G7/G20/IWF/Weltbank/NATO)", color: "#0891b2" },
   FISCAL_BUDGET: { label: "Haushalt & Fiskalpolitik", color: "#d97706" },
-  IFW_EVENTS: { label: "IfW-Kiel-Veranstaltungen", color: "#16a34a" },
+  IFW_EVENTS: { label: "Kiel Institut Events", color: "#16a34a" },
   OTHER: { label: "Sonstiges", color: "#64748b" },
 };
 

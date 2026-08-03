@@ -24,7 +24,7 @@ export default function CalendarView() {
         })}
       </div>
 
-      <div className="rounded-lg border border-slate-200 bg-white p-3 shadow-sm">
+      <div className="rounded-lg border border-[#b7c6e8] bg-[#edf1fa] p-3 shadow-sm">
         <FullCalendar
           plugins={[dayGridPlugin, timeGridPlugin, multiMonthPlugin]}
           initialView="multiMonthThree"

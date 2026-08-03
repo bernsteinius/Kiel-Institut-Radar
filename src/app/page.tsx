@@ -3,16 +3,25 @@ import { logout } from "@/lib/actions/auth";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-slate-50 px-4 py-8 sm:px-8">
+    <div className="min-h-screen bg-[#ffeee2] px-4 py-8 sm:px-8">
       <div className="mx-auto max-w-5xl">
         <div className="mb-6 flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-semibold text-slate-900">
-              Kiel Institut Radar
-            </h1>
-            <p className="text-sm text-slate-500">
-              EU, NATO, FED, IWF/Weltbank, G7 und weitere wirtschaftspolitische Termine
-            </p>
+          <div className="flex items-center gap-4">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/kiel-institut-logo.svg"
+              alt="Kiel Institut Logo"
+              width={140}
+              height={49}
+            />
+            <div>
+              <h1 className="text-xl font-semibold text-slate-900">
+                Kiel Institut Radar
+              </h1>
+              <p className="text-sm text-slate-500">
+                EU, NATO, FED, IWF/Weltbank, G7 und weitere wirtschaftspolitische Termine
+              </p>
+            </div>
           </div>
           <form action={logout}>
             <button

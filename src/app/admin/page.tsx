@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { CATEGORY_INFO } from "@/lib/categories";
 import { approveEvent, rejectEvent } from "@/lib/actions/events";
@@ -19,14 +20,24 @@ export default async function AdminPage() {
   });
 
   return (
-    <div className="min-h-screen bg-slate-50 px-4 py-8 sm:px-8">
+    <div className="min-h-screen bg-[#ffeee2] px-4 py-8 sm:px-8">
       <div className="mx-auto max-w-3xl">
-        <h1 className="mb-1 text-xl font-semibold text-slate-900">
-          Entwürfe zur Freigabe
-        </h1>
-        <p className="mb-6 text-sm text-slate-500">
-          Vom täglichen Job vorgeschlagene Ereignisse. Prüfen und freigeben, bevor sie im Kalender erscheinen.
-        </p>
+        <div className="mb-6 flex items-start justify-between gap-4">
+          <div>
+            <h1 className="mb-1 text-xl font-semibold text-slate-900">
+              Entwürfe zur Freigabe
+            </h1>
+            <p className="text-sm text-slate-500">
+              Vom täglichen Job vorgeschlagene Ereignisse. Prüfen und freigeben, bevor sie im Kalender erscheinen.
+            </p>
+          </div>
+          <Link
+            href="/admin/neu"
+            className="shrink-0 rounded-md bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700"
+          >
+            + Termin anlegen
+          </Link>
+        </div>
 
         {drafts.length === 0 && (
           <p className="text-sm text-slate-500">Keine offenen Entwürfe.</p>
