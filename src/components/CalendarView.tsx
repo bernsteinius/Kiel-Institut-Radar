@@ -3,6 +3,7 @@
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
+import multiMonthPlugin from "@fullcalendar/multimonth";
 import { CATEGORY_INFO, CATEGORY_ORDER } from "@/lib/categories";
 
 export default function CalendarView() {
@@ -25,12 +26,19 @@ export default function CalendarView() {
 
       <div className="rounded-lg border border-slate-200 bg-white p-3 shadow-sm">
         <FullCalendar
-          plugins={[dayGridPlugin, timeGridPlugin]}
-          initialView="dayGridMonth"
+          plugins={[dayGridPlugin, timeGridPlugin, multiMonthPlugin]}
+          initialView="multiMonthThree"
+          views={{
+            multiMonthThree: {
+              type: "multiMonth",
+              duration: { months: 3 },
+              multiMonthMaxColumns: 3,
+            },
+          }}
           headerToolbar={{
             left: "prev,next today",
             center: "title",
-            right: "dayGridMonth,timeGridWeek",
+            right: "multiMonthThree,dayGridMonth,timeGridWeek",
           }}
           locale="de"
           firstDay={1}
