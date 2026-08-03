@@ -82,6 +82,7 @@ export const kielPublicationsSource: EventSource = {
             type: "PUBLICATION",
             source: "Kiel Institut",
             institutions: "Kiel Institut",
+            location: "Kiel",
             sourceUrl: teaser.link.startsWith("http")
               ? teaser.link
               : `https://www.kielinstitut.de${teaser.link}`,

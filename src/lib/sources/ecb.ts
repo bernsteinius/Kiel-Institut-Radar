@@ -26,6 +26,15 @@ function parseEcbCalendar(html: string): RawEvent[] {
     const startDate = new Date(Date.UTC(Number(year), Number(month) - 1, Number(day)));
     if (startDate < today) continue;
 
+    // Die meisten Sitzungen finden am EZB-Sitz in Frankfurt statt, manche
+    // aber ausdrücklich woanders (z.B. "... hosted by the Deutsche
+    // Bundesbank in Berlin, Germany (Day 1)"). Ort dann aus dem Titel
+    // übernehmen statt pauschal Frankfurt anzunehmen.
+    const hostedMatch = title.match(
+      /\bhosted by\b[^,]*\bin ([A-Za-zÀ-ÿ.\- ]+, [A-Za-zÀ-ÿ.\- ]+?)(?:\s*\(|$)/
+    );
+    const location = hostedMatch ? hostedMatch[1].trim() : "Frankfurt am Main";
+
     events.push({
       title,
       startDate,
@@ -34,7 +43,7 @@ function parseEcbCalendar(html: string): RawEvent[] {
       type: "MEETING",
       source: "EZB",
       sourceUrl: CALENDAR_URL,
-      location: "Frankfurt am Main",
+      location,
       institutions: "EZB",
     });
   }

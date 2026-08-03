@@ -13,24 +13,28 @@ const MEETINGS: Array<{
   start: [number, number, number];
   end: [number, number, number];
   sourceUrl: string;
+  location: string;
 }> = [
   {
     title: "IWF/Weltbank Annual Meetings 2026 (Bangkok, Thailand)",
     start: [2026, 10, 12],
     end: [2026, 10, 18],
     sourceUrl: "https://www.worldbank.org/en/meetings/splash/annual",
+    location: "Bangkok, Thailand",
   },
   {
     title: "IWF/Weltbank Spring Meetings 2027 (Washington, D.C.)",
     start: [2027, 4, 12],
     end: [2027, 4, 17],
     sourceUrl: "https://www.worldbank.org/en/meetings/splash/spring",
+    location: "Washington, D.C., USA",
   },
   {
     title: "IWF/Weltbank Annual Meetings 2027 (Washington, D.C.)",
     start: [2027, 10, 4],
     end: [2027, 10, 9],
     sourceUrl: "https://www.worldbank.org/en/meetings/splash/annual",
+    location: "Washington, D.C., USA",
   },
 ];
 
@@ -46,6 +50,7 @@ export const imfWorldBankSource: EventSource = {
       type: "SUMMIT",
       source: "IWF/Weltbank",
       sourceUrl: meeting.sourceUrl,
+      location: meeting.location,
       institutions: "IWF, Weltbank",
     }));
   },

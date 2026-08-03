@@ -17,6 +17,7 @@ const SUMMITS: Array<{
   end: [number, number, number];
   sourceUrl: string;
   type: EventType;
+  location: string;
 }> = [
   {
     title: "G20 Foreign Ministers' Meeting 2026 (Atlanta, USA)",
@@ -24,6 +25,7 @@ const SUMMITS: Array<{
     end: [2026, 10, 31],
     sourceUrl: "https://g20.org/events-calendar/",
     type: "MEETING",
+    location: "Atlanta, USA",
   },
   {
     title: "G20-Gipfel 2026 (Miami, USA)",
@@ -31,6 +33,7 @@ const SUMMITS: Array<{
     end: [2026, 12, 15],
     sourceUrl: "https://g20.org/",
     type: "SUMMIT",
+    location: "Miami, USA",
   },
 ];
 
@@ -46,6 +49,7 @@ export const g7g20Source: EventSource = {
       type: summit.type,
       source: "G7/G20",
       sourceUrl: summit.sourceUrl,
+      location: summit.location,
       institutions: "G7/G20",
     }));
   },
