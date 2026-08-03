@@ -15,7 +15,7 @@ export default function LoginPage() {
         className="w-full max-w-sm rounded-lg border border-slate-200 bg-white p-8 shadow-sm"
       >
         <h1 className="mb-1 text-lg font-semibold text-slate-900">
-          IfW Kiel Ereigniskalender
+          Kiel Institut Radar
         </h1>
         <p className="mb-6 text-sm text-slate-500">
           Bitte Zugangspasswort eingeben.

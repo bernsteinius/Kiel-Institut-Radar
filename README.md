@@ -1,4 +1,4 @@
-# IfW Kiel Ereigniskalender
+# Kiel Institut Radar
 
 Web-Kalender für eine geschlossene Nutzergruppe: wirtschaftspolitische Termine
 (EU, NATO, FED, IWF/Weltbank, G7 u.a.) sowie eigene IfW-Kiel-Veranstaltungen,
