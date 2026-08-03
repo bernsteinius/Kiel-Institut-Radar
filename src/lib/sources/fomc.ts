@@ -34,6 +34,9 @@ function parseFomcCalendar(html: string): RawEvent[] {
   const meetingRegex =
     /fomc-meeting__month[^"]*"><strong>([A-Za-z]+)<\/strong><\/div>\s*<div class="fomc-meeting__date[^"]*">([^<]+)<\/div>/g;
 
+  const now = new Date();
+  const today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+
   const events: RawEvent[] = [];
   let match: RegExpExecArray | null;
   while ((match = meetingRegex.exec(html))) {
@@ -45,9 +48,12 @@ function parseFomcCalendar(html: string): RawEvent[] {
     const dayMatch = rawDate.match(/\d{1,2}/);
     if (!dayMatch) continue;
 
+    const startDate = new Date(Date.UTC(year, monthIndex, Number(dayMatch[0])));
+    if (startDate < today) continue;
+
     events.push({
       title: `FOMC-Sitzung (${monthName} ${year})`,
-      startDate: new Date(Date.UTC(year, monthIndex, Number(dayMatch[0]))),
+      startDate,
       allDay: true,
       category: "MONETARY_POLICY",
       type: "DECISION",

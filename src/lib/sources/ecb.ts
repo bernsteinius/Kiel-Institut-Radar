@@ -14,15 +14,21 @@ function parseEcbCalendar(html: string): RawEvent[] {
   const regex =
     /<dt>\s*(\d{2})\/(\d{2})\/(\d{4})\s*<\/dt>\s*<dd>\s*([\s\S]*?)<br>/g;
 
+  const now = new Date();
+  const today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+
   let match: RegExpExecArray | null;
   while ((match = regex.exec(html))) {
     const [, day, month, year, rawTitle] = match;
     const title = rawTitle.replace(/\s+/g, " ").trim();
     if (!title) continue;
 
+    const startDate = new Date(Date.UTC(Number(year), Number(month) - 1, Number(day)));
+    if (startDate < today) continue;
+
     events.push({
       title,
-      startDate: new Date(Date.UTC(Number(year), Number(month) - 1, Number(day))),
+      startDate,
       allDay: true,
       category: "MONETARY_POLICY",
       type: "MEETING",

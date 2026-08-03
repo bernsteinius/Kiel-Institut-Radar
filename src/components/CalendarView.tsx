@@ -106,6 +106,7 @@ export default function CalendarView() {
             const confirmationStatus = info.event.extendedProps.confirmationStatus as
               | string
               | undefined;
+            const participants = (info.event.extendedProps.participants ?? []) as string[];
             const attachments = (info.event.extendedProps.attachments ?? []) as Array<{
               fileName: string;
             }>;
@@ -113,6 +114,9 @@ export default function CalendarView() {
             const parts = [[typeLabel, categoryLabel].filter(Boolean).join(" · ")];
             if (location) parts.push(`Ort: ${location}`);
             if (institutions) parts.push(`Institution(en): ${institutions}`);
+            if (participants.length > 0) {
+              parts.push(`Teilnehmer Kiel Institut: ${participants.join(", ")}`);
+            }
             if (confirmationStatus === "TENTATIVE") parts.push("Status: vorläufig");
             if (description) parts.push(description);
             if (attachments.length > 0) {

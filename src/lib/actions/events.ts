@@ -5,7 +5,12 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { CATEGORY_INFO } from "@/lib/categories";
 import { EVENT_TYPE_INFO } from "@/lib/event-types";
-import type { EventCategory, EventType } from "@/generated/prisma/enums";
+import type {
+  EventCategory,
+  EventType,
+  EventPriority,
+  ConfirmationStatus,
+} from "@/generated/prisma/enums";
 
 export interface CreateEventFormState {
   error?: string;
@@ -25,10 +30,24 @@ function isEventType(value: string): value is EventType {
   return value in EVENT_TYPE_INFO;
 }
 
-export async function createEvent(
-  _prevState: CreateEventFormState,
-  formData: FormData
-): Promise<CreateEventFormState> {
+interface ParsedEventForm {
+  title: string;
+  description: string;
+  startDate: Date;
+  endDate: Date | null;
+  category: EventCategory;
+  type: EventType;
+  source: string;
+  sourceUrl: string;
+  location: string;
+  institutions: string;
+  priority: EventPriority;
+  confirmationStatus: ConfirmationStatus;
+  participants: string[];
+  attachments: File[];
+}
+
+function parseEventForm(formData: FormData): ParsedEventForm | { error: string } {
   const title = String(formData.get("title") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
   const startDateRaw = String(formData.get("startDate") ?? "");
@@ -41,6 +60,10 @@ export async function createEvent(
   const institutions = String(formData.get("institutions") ?? "").trim();
   const priorityRaw = String(formData.get("priority") ?? "MEDIUM");
   const confirmationStatusRaw = String(formData.get("confirmationStatus") ?? "CONFIRMED");
+  const participants = String(formData.get("participants") ?? "")
+    .split("\n")
+    .map((name) => name.trim())
+    .filter(Boolean);
   const attachments = formData
     .getAll("sourcePdf")
     .filter((entry): entry is File => entry instanceof File && entry.size > 0);
@@ -78,43 +101,107 @@ export async function createEvent(
     return { error: "Ungültiger Status." };
   }
 
-  if (!sourceUrl && attachments.length === 0) {
-    return { error: "Bitte einen Link oder mindestens ein PDF als Quelle angeben." };
-  }
-
   if (attachments.some((file) => file.type !== "application/pdf")) {
     return { error: "Alle Quelldateien müssen PDFs sein." };
   }
 
-  const event = await prisma.event.create({
-    data: {
-      title,
-      description: description || null,
-      startDate,
-      endDate,
-      category: categoryRaw,
-      type: typeRaw,
-      status: "PUBLISHED",
-      source: source || null,
-      sourceUrl: sourceUrl || null,
-      location: location || null,
-      institutions: institutions || null,
-      priority: priorityRaw,
-      confirmationStatus: confirmationStatusRaw,
-    },
-  });
+  return {
+    title,
+    description,
+    startDate,
+    endDate,
+    category: categoryRaw,
+    type: typeRaw,
+    source,
+    sourceUrl,
+    location,
+    institutions,
+    priority: priorityRaw,
+    confirmationStatus: confirmationStatusRaw,
+    participants,
+    attachments,
+  };
+}
 
+async function storeAttachments(eventId: string, attachments: File[]) {
   for (const file of attachments) {
     const data = Buffer.from(await file.arrayBuffer());
     await prisma.eventAttachment.create({
-      data: {
-        eventId: event.id,
-        fileName: file.name,
-        fileType: file.type,
-        data,
-      },
+      data: { eventId, fileName: file.name, fileType: file.type, data },
     });
   }
+}
+
+export async function createEvent(
+  _prevState: CreateEventFormState,
+  formData: FormData
+): Promise<CreateEventFormState> {
+  const parsed = parseEventForm(formData);
+  if ("error" in parsed) return parsed;
+
+  if (!parsed.sourceUrl && parsed.attachments.length === 0) {
+    return { error: "Bitte einen Link oder mindestens ein PDF als Quelle angeben." };
+  }
+
+  const event = await prisma.event.create({
+    data: {
+      title: parsed.title,
+      description: parsed.description || null,
+      startDate: parsed.startDate,
+      endDate: parsed.endDate,
+      category: parsed.category,
+      type: parsed.type,
+      status: "PUBLISHED",
+      source: parsed.source || null,
+      sourceUrl: parsed.sourceUrl || null,
+      location: parsed.location || null,
+      institutions: parsed.institutions || null,
+      priority: parsed.priority,
+      confirmationStatus: parsed.confirmationStatus,
+      participants: parsed.participants,
+    },
+  });
+
+  await storeAttachments(event.id, parsed.attachments);
+
+  revalidatePath("/admin");
+  revalidatePath("/");
+  redirect("/admin");
+}
+
+export async function updateEvent(
+  id: string,
+  _prevState: CreateEventFormState,
+  formData: FormData
+): Promise<CreateEventFormState> {
+  const parsed = parseEventForm(formData);
+  if ("error" in parsed) return parsed;
+
+  const existingAttachmentCount = await prisma.eventAttachment.count({ where: { eventId: id } });
+  if (!parsed.sourceUrl && parsed.attachments.length === 0 && existingAttachmentCount === 0) {
+    return { error: "Bitte einen Link oder mindestens ein PDF als Quelle angeben." };
+  }
+
+  await prisma.event.update({
+    where: { id },
+    data: {
+      title: parsed.title,
+      description: parsed.description || null,
+      startDate: parsed.startDate,
+      endDate: parsed.endDate,
+      category: parsed.category,
+      type: parsed.type,
+      source: parsed.source || null,
+      sourceUrl: parsed.sourceUrl || null,
+      location: parsed.location || null,
+      institutions: parsed.institutions || null,
+      priority: parsed.priority,
+      confirmationStatus: parsed.confirmationStatus,
+      participants: parsed.participants,
+    },
+  });
+
+  await storeAttachments(id, parsed.attachments);
 
   revalidatePath("/admin");
   revalidatePath("/");

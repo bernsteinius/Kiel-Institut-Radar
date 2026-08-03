@@ -44,20 +44,21 @@ function parseTeasers(html: string): Teaser[] {
   return teasers;
 }
 
+// Feste untere Grenze statt "aktueller Monat", damit auch bereits im Jahr
+// 2026 erschienene Publikationen erfasst werden (kein Rückwirkendes Einlesen
+// der bestehenden mehreren tausend Titel aus den Vorjahren).
+const CUTOFF = new Date(Date.UTC(2026, 0, 1));
+
 /**
  * Neue Publikationen des Kiel Instituts (Policy Brief, Working Paper u.a.).
  * Erscheinungsdatum ist nur monatsgenau bekannt, daher wird der 1. des
- * Monats verwendet. Nur Publikationen ab dem aktuellen Monat werden erfasst
- * (kein Rückwirkendes Einlesen der bestehenden mehreren tausend Titel) -
- * "neue" Publikationen erscheinen, sobald sie auf der jeweiligen
- * Reihen-Seite auftauchen.
+ * Monats verwendet. Nur Publikationen ab CUTOFF werden erfasst - "neue"
+ * Publikationen erscheinen, sobald sie auf der jeweiligen Reihen-Seite
+ * auftauchen.
  */
 export const kielPublicationsSource: EventSource = {
   name: "kiel-institut-publikationen",
   async fetch(): Promise<RawEvent[]> {
-    const now = new Date();
-    const currentMonthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
-
     const events: RawEvent[] = [];
 
     for (const series of SERIES) {
@@ -71,7 +72,7 @@ export const kielPublicationsSource: EventSource = {
         for (const teaser of parseTeasers(html)) {
           const [monthStr, yearStr] = teaser.publishedDate.split("/");
           const date = new Date(Date.UTC(Number(yearStr), Number(monthStr) - 1, 1));
-          if (date < currentMonthStart) continue;
+          if (date < CUTOFF) continue;
 
           events.push({
             title: `${series.label}: ${teaser.title}`,

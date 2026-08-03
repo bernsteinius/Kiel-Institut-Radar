@@ -51,6 +51,7 @@ export async function GET() {
       institutions: event.institutions,
       priority: event.priority,
       confirmationStatus: event.confirmationStatus,
+      participants: event.participants,
       attachments: event.attachments.map((a) => ({
         id: a.id,
         fileName: a.fileName,

@@ -90,6 +90,12 @@ export default async function AdminPage() {
                       Freigeben
                     </button>
                   </form>
+                  <Link
+                    href={`/admin/${event.id}/bearbeiten`}
+                    className="rounded-md border border-slate-300 px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100"
+                  >
+                    Ändern
+                  </Link>
                   <form action={rejectEvent.bind(null, event.id)}>
                     <button
                       type="submit"
