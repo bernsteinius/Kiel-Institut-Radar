@@ -54,9 +54,14 @@ export default function EventForm({
   return (
     <div className="min-h-screen bg-[#ffeee2] px-4 py-8 sm:px-8">
       <div className="mx-auto max-w-xl">
-        <Link href={backHref} className="mb-4 inline-block text-sm text-[#194abb] hover:underline">
-          ← {backLabel}
-        </Link>
+        <div className="mb-4 flex gap-4">
+          <Link href={backHref} className="text-sm text-[#194abb] hover:underline">
+            ← {backLabel}
+          </Link>
+          <Link href="/" className="text-sm text-[#194abb] hover:underline">
+            ← Zurück zum Kalender
+          </Link>
+        </div>
 
         <h1 className="mb-1 text-xl font-semibold text-slate-900">{heading}</h1>
         <p className="mb-6 text-sm text-slate-500">{subheading}</p>
