@@ -92,45 +92,56 @@ export default function CalendarView() {
 
   return (
     <div>
-      <p className="mb-2 text-xs font-medium text-slate-500">
-        Kalender ein-/ausblenden:
-      </p>
-      <div className="mb-4 flex flex-wrap gap-2">
-        {VISIBILITY_GROUPS.map(({ key, label, color }) => {
-          const hidden = hiddenGroups.has(key);
-          return (
-            <button
-              key={key}
-              type="button"
-              onClick={() => toggleGroup(key)}
-              aria-pressed={!hidden}
-              className={`flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition-opacity ${
-                hidden
-                  ? "border-slate-200 bg-white text-slate-400 opacity-50"
-                  : "border-slate-300 bg-white text-slate-700"
-              }`}
-            >
-              <span
-                className="inline-block h-2.5 w-2.5 shrink-0 rounded-full"
-                style={{ backgroundColor: color }}
-              />
-              {label}
-            </button>
-          );
-        })}
-      </div>
+      <div className="mb-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+        <div>
+          <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
+            Kalender ein-/ausblenden
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {VISIBILITY_GROUPS.map(({ key, label, color }) => {
+              const hidden = hiddenGroups.has(key);
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => toggleGroup(key)}
+                  aria-pressed={!hidden}
+                  className={`flex items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-xs font-medium transition-opacity ${
+                    hidden
+                      ? "border-slate-200 bg-white text-slate-400 opacity-50"
+                      : "border-slate-300 bg-white text-slate-700"
+                  }`}
+                >
+                  <span
+                    className="inline-block h-2.5 w-2.5 shrink-0 rounded-full"
+                    style={{ backgroundColor: color }}
+                  />
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
-      <div className="mb-4 flex flex-wrap gap-3">
-        {EVENT_TYPE_ORDER.map((type) => {
-          const info = EVENT_TYPE_INFO[type];
-          const Icon = info.icon;
-          return (
-            <span key={type} className="flex items-center gap-1.5 text-xs text-slate-500">
-              <Icon size={13} aria-hidden="true" />
-              {info.label}
-            </span>
-          );
-        })}
+        <div className="my-4 border-t border-slate-100" />
+
+        <div>
+          <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
+            Termin-Typ
+          </p>
+          <div className="flex flex-wrap gap-x-4 gap-y-2">
+            {EVENT_TYPE_ORDER.map((type) => {
+              const info = EVENT_TYPE_INFO[type];
+              const Icon = info.icon;
+              return (
+                <span key={type} className="flex items-center gap-1.5 text-xs text-slate-600">
+                  <Icon size={13} aria-hidden="true" />
+                  {info.label}
+                </span>
+              );
+            })}
+          </div>
+        </div>
       </div>
 
       <div className="mb-3 flex flex-wrap gap-2 sm:hidden">
