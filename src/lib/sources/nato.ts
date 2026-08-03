@@ -81,6 +81,7 @@ export const natoSource: EventSource = {
           ? `https://www.nato.int${page.link.split("?")[0]}`
           : SEARCH_ENDPOINT,
         location: location || undefined,
+        country: page.country || undefined,
         institutions: "NATO",
       });
     }

@@ -11,6 +11,10 @@ export interface RawEvent {
   source: string;
   sourceUrl?: string;
   location?: string;
+  /** Land, wenn von der Quelle direkt bekannt (sonst wird es aus location hergeleitet) */
+  country?: string;
+  /** Freitext-Uhrzeit am Ort, z.B. "14:00 Ortszeit" (startDate bleibt reines Datum) */
+  locationTime?: string;
   institutions?: string;
   /** Kiel-Institut-Themen, nur bei Publikationen relevant */
   topics?: string[];

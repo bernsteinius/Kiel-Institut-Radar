@@ -36,6 +36,8 @@ export default async function EditEventPage({
         category: event.category,
         type: event.type,
         location: event.location ?? undefined,
+        country: event.country ?? undefined,
+        locationTime: event.locationTime ?? undefined,
         institutions: event.institutions ?? undefined,
         priority: event.priority,
         confirmationStatus: event.confirmationStatus,

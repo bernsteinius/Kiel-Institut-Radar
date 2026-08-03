@@ -88,6 +88,20 @@ export default async function EventDetailPage({
                 <dd className="text-sm text-slate-800">{event.location}</dd>
               </div>
             )}
+            {event.country && (
+              <div>
+                <dt className="text-xs font-medium uppercase tracking-wide text-slate-400">Land</dt>
+                <dd className="text-sm text-slate-800">{event.country}</dd>
+              </div>
+            )}
+            {event.locationTime && (
+              <div>
+                <dt className="text-xs font-medium uppercase tracking-wide text-slate-400">
+                  Uhrzeit des Ortes
+                </dt>
+                <dd className="text-sm text-slate-800">{event.locationTime}</dd>
+              </div>
+            )}
             {event.institutions && (
               <div>
                 <dt className="text-xs font-medium uppercase tracking-wide text-slate-400">

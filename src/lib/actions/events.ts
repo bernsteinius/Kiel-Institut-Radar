@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { CATEGORY_INFO } from "@/lib/categories";
 import { EVENT_TYPE_INFO } from "@/lib/event-types";
 import { PUBLICATION_TOPICS } from "@/lib/publication-topics";
+import { resolveCountry } from "@/lib/countries";
 import type {
   EventCategory,
   EventType,
@@ -41,6 +42,8 @@ interface ParsedEventForm {
   source: string;
   sourceUrl: string;
   location: string;
+  country: string;
+  locationTime: string;
   institutions: string;
   priority: EventPriority;
   confirmationStatus: ConfirmationStatus;
@@ -59,6 +62,8 @@ function parseEventForm(formData: FormData): ParsedEventForm | { error: string }
   const source = String(formData.get("source") ?? "").trim();
   const sourceUrl = String(formData.get("sourceUrl") ?? "").trim();
   const location = String(formData.get("location") ?? "").trim();
+  const countryInput = String(formData.get("country") ?? "").trim();
+  const locationTime = String(formData.get("locationTime") ?? "").trim();
   const institutions = String(formData.get("institutions") ?? "").trim();
   const priorityRaw = String(formData.get("priority") ?? "MEDIUM");
   const confirmationStatusRaw = String(formData.get("confirmationStatus") ?? "CONFIRMED");
@@ -118,6 +123,8 @@ function parseEventForm(formData: FormData): ParsedEventForm | { error: string }
     source,
     sourceUrl,
     location,
+    country: resolveCountry(location, countryInput) ?? "",
+    locationTime,
     institutions,
     priority: priorityRaw,
     confirmationStatus: confirmationStatusRaw,
@@ -159,6 +166,8 @@ export async function createEvent(
       source: parsed.source || null,
       sourceUrl: parsed.sourceUrl || null,
       location: parsed.location || null,
+      country: parsed.country || null,
+      locationTime: parsed.locationTime || null,
       institutions: parsed.institutions || null,
       priority: parsed.priority,
       confirmationStatus: parsed.confirmationStatus,
@@ -204,6 +213,8 @@ export async function updateEvent(
       source: parsed.source || null,
       sourceUrl: parsed.sourceUrl || null,
       location: parsed.location || null,
+      country: parsed.country || null,
+      locationTime: parsed.locationTime || null,
       institutions: parsed.institutions || null,
       priority: parsed.priority,
       confirmationStatus: parsed.confirmationStatus,

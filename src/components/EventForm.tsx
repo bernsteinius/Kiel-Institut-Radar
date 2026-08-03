@@ -16,6 +16,8 @@ export interface EventFormDefaults {
   category?: string;
   type?: EventType;
   location?: string;
+  country?: string;
+  locationTime?: string;
   institutions?: string;
   priority?: string;
   confirmationStatus?: string;
@@ -182,6 +184,35 @@ export default function EventForm({
                 type="text"
                 defaultValue={defaultValues?.location}
                 placeholder="z. B. Brüssel"
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
+              />
+            </div>
+            <div className="flex-1">
+              <label htmlFor="country" className="mb-1 block text-sm font-medium text-slate-700">
+                Land (optional, sonst automatisch aus Ort ermittelt)
+              </label>
+              <input
+                id="country"
+                name="country"
+                type="text"
+                defaultValue={defaultValues?.country}
+                placeholder="z. B. Belgien"
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
+              />
+            </div>
+          </div>
+
+          <div className="flex gap-4">
+            <div className="flex-1">
+              <label htmlFor="locationTime" className="mb-1 block text-sm font-medium text-slate-700">
+                Uhrzeit des Ortes (optional)
+              </label>
+              <input
+                id="locationTime"
+                name="locationTime"
+                type="text"
+                defaultValue={defaultValues?.locationTime}
+                placeholder="z. B. 14:00 Ortszeit"
                 className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
               />
             </div>

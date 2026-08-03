@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import FullCalendar from "@fullcalendar/react";
 import type { DatesSetArg, EventContentArg, EventInput } from "@fullcalendar/core";
 import dayGridPlugin from "@fullcalendar/daygrid";
-import timeGridPlugin from "@fullcalendar/timegrid";
 import multiMonthPlugin from "@fullcalendar/multimonth";
 import { VISIBILITY_GROUPS, type VisibilityGroup } from "@/lib/categories";
 import { EVENT_TYPE_INFO, EVENT_TYPE_ORDER } from "@/lib/event-types";
@@ -30,7 +29,7 @@ function renderEventContent(arg: EventContentArg) {
 }
 
 const VIEW_SWITCHER: Array<{ view: string; label: string }> = [
-  { view: "timeGridWeek", label: "Woche" },
+  { view: "dayGridWeek", label: "Woche" },
   { view: "dayGridMonth", label: "Monat" },
   { view: "multiMonthTwo", label: "2 Monate" },
   { view: "multiMonthThree", label: "3 Monate" },
@@ -227,7 +226,7 @@ export default function CalendarView() {
       <div className="rounded-lg border border-[#b7c6e8] bg-[#edf1fa] p-3 shadow-sm">
         <FullCalendar
           ref={calendarRef}
-          plugins={[dayGridPlugin, timeGridPlugin, multiMonthPlugin]}
+          plugins={[dayGridPlugin, multiMonthPlugin]}
           initialView="multiMonthFour"
           views={{
             multiMonthTwo: {
@@ -252,7 +251,7 @@ export default function CalendarView() {
           headerToolbar={{
             left: "prev,next today",
             center: "title",
-            right: "timeGridWeek,dayGridMonth,multiMonthTwo,multiMonthThree,multiMonthFour",
+            right: "dayGridWeek,dayGridMonth,multiMonthTwo,multiMonthThree,multiMonthFour",
           }}
           buttonText={{
             week: "Woche",
@@ -275,6 +274,8 @@ export default function CalendarView() {
             const categoryLabel = info.event.extendedProps.categoryLabel as string;
             const typeLabel = info.event.extendedProps.typeLabel as string | undefined;
             const location = info.event.extendedProps.location as string | undefined;
+            const country = info.event.extendedProps.country as string | undefined;
+            const locationTime = info.event.extendedProps.locationTime as string | undefined;
             const institutions = info.event.extendedProps.institutions as string | undefined;
             const confirmationStatus = info.event.extendedProps.confirmationStatus as
               | string
@@ -286,7 +287,8 @@ export default function CalendarView() {
             }>;
 
             const parts = [[typeLabel, categoryLabel].filter(Boolean).join(" · ")];
-            if (location) parts.push(`Ort: ${location}`);
+            if (location) parts.push(`Ort: ${location}${country ? `, ${country}` : ""}`);
+            if (locationTime) parts.push(`Uhrzeit des Ortes: ${locationTime}`);
             if (institutions) parts.push(`Institution(en): ${institutions}`);
             if (topics.length > 0) parts.push(`Themen: ${topics.join(", ")}`);
             if (participants.length > 0) {

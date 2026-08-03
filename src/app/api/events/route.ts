@@ -49,6 +49,8 @@ export async function GET() {
       source: event.source,
       sourceUrl: event.sourceUrl,
       location: event.location,
+      country: event.country,
+      locationTime: event.locationTime,
       institutions: event.institutions,
       priority: event.priority,
       confirmationStatus: event.confirmationStatus,

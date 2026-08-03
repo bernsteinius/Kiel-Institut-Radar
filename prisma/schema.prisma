@@ -58,6 +58,11 @@ model Event {
   source             String?
   sourceUrl          String?
   location           String?
+  /// Land, wenn von der Quelle bekannt oder aus "location" hergeleitet
+  country            String?
+  /// Freitext-Uhrzeit am Ort (z.B. "14:00 Ortszeit"), da startDate/endDate
+  /// bewusst reine Datumsangaben ohne Uhrzeit sind (siehe allDay)
+  locationTime       String?
   institutions       String?
   priority           EventPriority       @default(MEDIUM)
   confirmationStatus ConfirmationStatus  @default(CONFIRMED)

@@ -1,6 +1,7 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
 import { sources, type RawEvent } from "@/lib/sources";
+import { resolveCountry } from "@/lib/countries";
 
 interface IngestSummary {
   source: string;
@@ -55,6 +56,8 @@ export async function ingestAll(): Promise<IngestSummary[]> {
             source: raw.source,
             sourceUrl: raw.sourceUrl,
             location: raw.location,
+            country: resolveCountry(raw.location, raw.country),
+            locationTime: raw.locationTime,
             institutions: raw.institutions,
             topics: raw.topics ?? [],
           },
