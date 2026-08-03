@@ -20,6 +20,7 @@ interface Teaser {
   title: string;
   link: string;
   publishedDate: string; // "MM/YYYY"
+  publicationType?: string;
 }
 
 function parseTeasers(html: string): Teaser[] {
@@ -33,16 +34,48 @@ function parseTeasers(html: string): Teaser[] {
     const linkMatch = block.match(
       /<a class="publication-page-teaser__page-link" href="([^"]+)">([^<]+)<\/a>/
     );
+    const typeMatch = block.match(/<span class="meta meta__category">([^<]+)<\/span>/);
     if (!dateMatch || !linkMatch) continue;
 
     teasers.push({
       title: linkMatch[2].trim(),
       link: linkMatch[1],
       publishedDate: `${dateMatch[1]}/${dateMatch[2]}`,
+      publicationType: typeMatch?.[1].trim(),
     });
   }
 
   return teasers;
+}
+
+/**
+ * Die Serien-Übersichtsseiten zeigen nur die ersten ~10 Publikationen; ein
+ * "Mehr anzeigen"-Link lädt per AJAX (TYPO3 tx_ifwlistpages readmore-Action)
+ * die nächste Seite als JSON nach. Der cHash ist pro Seitenzahl gültig und
+ * kann nicht selbst berechnet werden - jede Antwort enthält aber bereits den
+ * korrekten Link für die jeweils nächste Seite, dem wir einfach folgen.
+ */
+function extractReadMoreHref(html: string): string | null {
+  const match = html.match(/class="readmore-button[^"]*"[^>]*href="([^"]+)"/);
+  if (!match) return null;
+  return match[1].replace(/&amp;/g, "&");
+}
+
+async function fetchNextPage(href: string): Promise<string | null> {
+  try {
+    const url = href.startsWith("http") ? href : `https://www.kielinstitut.de${href}`;
+    const res = await fetch(url, {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (compatible; IfWKalenderBot/1.0)",
+        "X-Requested-With": "XMLHttpRequest",
+      },
+    });
+    if (!res.ok) return null;
+    const data = (await res.json()) as { markup?: string };
+    return data.markup ?? null;
+  } catch {
+    return null;
+  }
 }
 
 /**
@@ -89,12 +122,18 @@ async function fetchTopics(url: string): Promise<string[]> {
 // der bestehenden mehreren tausend Titel aus den Vorjahren).
 const CUTOFF = new Date(Date.UTC(2026, 0, 1));
 
+// Harte Obergrenze an Folgeseiten pro Serie, damit ein Ausbleiben des
+// CUTOFF-Treffers (z.B. bei einer sehr publikationsarmen Serie) nicht zu
+// unbegrenzt vielen Requests führt.
+const MAX_PAGES_PER_SERIES = 15;
+
 /**
  * Neue Publikationen des Kiel Instituts (Policy Brief, Working Paper u.a.).
  * Erscheinungsdatum ist nur monatsgenau bekannt, daher wird der 1. des
- * Monats verwendet. Nur Publikationen ab CUTOFF werden erfasst - "neue"
- * Publikationen erscheinen, sobald sie auf der jeweiligen Reihen-Seite
- * auftauchen.
+ * Monats verwendet. Es wird so lange weiterpaginiert, bis eine Publikation
+ * vor CUTOFF gefunden wird (oder keine weitere Seite mehr existiert) - so
+ * werden immer alle Publikationen ab CUTOFF erfasst, auch wenn mehr als
+ * eine Seite nötig ist.
  */
 export const kielPublicationsSource: EventSource = {
   name: "kiel-institut-publikationen",
@@ -108,29 +147,50 @@ export const kielPublicationsSource: EventSource = {
         });
         if (!res.ok) continue;
 
-        const html = await res.text();
-        for (const teaser of parseTeasers(html)) {
-          const [monthStr, yearStr] = teaser.publishedDate.split("/");
-          const date = new Date(Date.UTC(Number(yearStr), Number(monthStr) - 1, 1));
-          if (date < CUTOFF) continue;
+        let html = await res.text();
+        let pageCount = 0;
+        let reachedCutoff = false;
 
-          const sourceUrl = teaser.link.startsWith("http")
-            ? teaser.link
-            : `https://www.kielinstitut.de${teaser.link}`;
-          const title = `${series.label}: ${teaser.title}`;
+        while (true) {
+          const teasers = parseTeasers(html);
 
-          events.push({
-            title,
-            startDate: date,
-            allDay: true,
-            category: "IFW_EVENTS",
-            type: "PUBLICATION",
-            source: "Kiel Institut",
-            institutions: "Kiel Institut",
-            location: "Kiel",
-            sourceUrl,
-            topics: await fetchTopics(sourceUrl),
-          });
+          for (const teaser of teasers) {
+            const [monthStr, yearStr] = teaser.publishedDate.split("/");
+            const date = new Date(Date.UTC(Number(yearStr), Number(monthStr) - 1, 1));
+            if (date < CUTOFF) {
+              reachedCutoff = true;
+              break;
+            }
+
+            const sourceUrl = teaser.link.startsWith("http")
+              ? teaser.link
+              : `https://www.kielinstitut.de${teaser.link}`;
+            const title = `${series.label}: ${teaser.title}`;
+
+            events.push({
+              title,
+              startDate: date,
+              allDay: true,
+              category: "IFW_EVENTS",
+              type: "PUBLICATION",
+              source: "Kiel Institut",
+              institutions: "Kiel Institut",
+              location: "Kiel",
+              sourceUrl,
+              topics: await fetchTopics(sourceUrl),
+              publicationType: teaser.publicationType,
+            });
+          }
+
+          if (reachedCutoff) break;
+
+          const nextHref = extractReadMoreHref(html);
+          pageCount += 1;
+          if (!nextHref || pageCount >= MAX_PAGES_PER_SERIES) break;
+
+          const nextHtml = await fetchNextPage(nextHref);
+          if (!nextHtml) break;
+          html = nextHtml;
         }
       } catch {
         continue;

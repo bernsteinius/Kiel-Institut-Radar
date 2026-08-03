@@ -18,6 +18,8 @@ export interface RawEvent {
   institutions?: string;
   /** Kiel-Institut-Themen, nur bei Publikationen relevant */
   topics?: string[];
+  /** Publikationstyp (z.B. "Wirtschaftspolitischer Beitrag"), nur bei Publikationen relevant */
+  publicationType?: string;
 }
 
 export interface EventSource {

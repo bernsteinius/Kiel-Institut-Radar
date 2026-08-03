@@ -60,6 +60,7 @@ export async function ingestAll(): Promise<IngestSummary[]> {
             locationTime: raw.locationTime,
             institutions: raw.institutions,
             topics: raw.topics ?? [],
+            publicationType: raw.publicationType,
           },
         });
         created += 1;

@@ -71,6 +71,9 @@ model Event {
   /// Kiel-Institut-Themen (offizielle Taxonomie), nur bei type=PUBLICATION relevant,
   /// eine Publikation kann mehreren Themen zugeordnet sein
   topics             String[]            @default([])
+  /// Publikationstyp (z.B. "Wirtschaftspolitischer Beitrag", "Journal Article"),
+  /// nur bei type=PUBLICATION relevant
+  publicationType    String?
   attachments        EventAttachment[]
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt

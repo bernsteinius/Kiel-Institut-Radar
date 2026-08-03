@@ -43,6 +43,7 @@ export default async function EditEventPage({
         confirmationStatus: event.confirmationStatus,
         participants: event.participants.join("\n"),
         topics: event.topics,
+        publicationType: event.publicationType ?? undefined,
         source: event.source ?? undefined,
         sourceUrl: event.sourceUrl ?? undefined,
       }}

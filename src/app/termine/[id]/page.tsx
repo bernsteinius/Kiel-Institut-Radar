@@ -110,6 +110,14 @@ export default async function EventDetailPage({
                 <dd className="text-sm text-slate-800">{event.institutions}</dd>
               </div>
             )}
+            {event.publicationType && (
+              <div>
+                <dt className="text-xs font-medium uppercase tracking-wide text-slate-400">
+                  Publikationstyp
+                </dt>
+                <dd className="text-sm text-slate-800">{event.publicationType}</dd>
+              </div>
+            )}
             <div>
               <dt className="text-xs font-medium uppercase tracking-wide text-slate-400">Priorität</dt>
               <dd className="text-sm text-slate-800">{PRIORITY_LABEL[event.priority]}</dd>

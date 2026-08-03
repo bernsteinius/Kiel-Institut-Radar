@@ -282,6 +282,7 @@ export default function CalendarView() {
               | undefined;
             const participants = (info.event.extendedProps.participants ?? []) as string[];
             const topics = (info.event.extendedProps.topics ?? []) as string[];
+            const publicationType = info.event.extendedProps.publicationType as string | undefined;
             const attachments = (info.event.extendedProps.attachments ?? []) as Array<{
               fileName: string;
             }>;
@@ -290,6 +291,7 @@ export default function CalendarView() {
             if (location) parts.push(`Ort: ${location}${country ? `, ${country}` : ""}`);
             if (locationTime) parts.push(`Uhrzeit des Ortes: ${locationTime}`);
             if (institutions) parts.push(`Institution(en): ${institutions}`);
+            if (publicationType) parts.push(`Publikationstyp: ${publicationType}`);
             if (topics.length > 0) parts.push(`Themen: ${topics.join(", ")}`);
             if (participants.length > 0) {
               parts.push(`Teilnehmer Kiel Institut: ${participants.join(", ")}`);

@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { CATEGORY_INFO } from "@/lib/categories";
 import { EVENT_TYPE_INFO } from "@/lib/event-types";
 import { PUBLICATION_TOPICS } from "@/lib/publication-topics";
+import { PUBLICATION_TYPES } from "@/lib/publication-types";
 import { resolveCountry } from "@/lib/countries";
 import type {
   EventCategory,
@@ -49,6 +50,7 @@ interface ParsedEventForm {
   confirmationStatus: ConfirmationStatus;
   participants: string[];
   topics: string[];
+  publicationType: string;
   attachments: File[];
 }
 
@@ -72,6 +74,8 @@ function parseEventForm(formData: FormData): ParsedEventForm | { error: string }
     .map((name) => name.trim())
     .filter(Boolean);
   const topics = formData.getAll("topics").map(String).filter((t) => PUBLICATION_TOPICS.includes(t));
+  const publicationTypeRaw = String(formData.get("publicationType") ?? "").trim();
+  const publicationType = PUBLICATION_TYPES.includes(publicationTypeRaw) ? publicationTypeRaw : "";
   const attachments = formData
     .getAll("sourcePdf")
     .filter((entry): entry is File => entry instanceof File && entry.size > 0);
@@ -130,6 +134,7 @@ function parseEventForm(formData: FormData): ParsedEventForm | { error: string }
     confirmationStatus: confirmationStatusRaw,
     participants,
     topics,
+    publicationType,
     attachments,
   };
 }
@@ -173,6 +178,7 @@ export async function createEvent(
       confirmationStatus: parsed.confirmationStatus,
       participants: parsed.participants,
       topics: parsed.topics,
+      publicationType: parsed.publicationType || null,
     },
   });
 
@@ -220,6 +226,7 @@ export async function updateEvent(
       confirmationStatus: parsed.confirmationStatus,
       participants: parsed.participants,
       topics: parsed.topics,
+      publicationType: parsed.publicationType || null,
     },
   });
 

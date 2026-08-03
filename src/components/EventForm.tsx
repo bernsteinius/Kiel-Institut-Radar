@@ -6,6 +6,7 @@ import type { CreateEventFormState } from "@/lib/actions/events";
 import { CATEGORY_INFO, CATEGORY_ORDER } from "@/lib/categories";
 import { EVENT_TYPE_INFO, EVENT_TYPE_ORDER } from "@/lib/event-types";
 import { PUBLICATION_TOPICS } from "@/lib/publication-topics";
+import { PUBLICATION_TYPES } from "@/lib/publication-types";
 import type { EventType } from "@/generated/prisma/enums";
 
 export interface EventFormDefaults {
@@ -23,6 +24,7 @@ export interface EventFormDefaults {
   confirmationStatus?: string;
   participants?: string;
   topics?: string[];
+  publicationType?: string;
   source?: string;
   sourceUrl?: string;
 }
@@ -276,6 +278,27 @@ export default function EventForm({
               className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
             />
           </div>
+
+          {type === "PUBLICATION" && (
+            <div>
+              <label htmlFor="publicationType" className="mb-1 block text-sm font-medium text-slate-700">
+                Publikationstyp (optional)
+              </label>
+              <select
+                id="publicationType"
+                name="publicationType"
+                defaultValue={defaultValues?.publicationType ?? ""}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
+              >
+                <option value="">Bitte wählen…</option>
+                {PUBLICATION_TYPES.map((pt) => (
+                  <option key={pt} value={pt}>
+                    {pt}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           {type === "PUBLICATION" && (
             <div>
