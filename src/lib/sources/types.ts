@@ -12,6 +12,8 @@ export interface RawEvent {
   sourceUrl?: string;
   location?: string;
   institutions?: string;
+  /** Kiel-Institut-Themen, nur bei Publikationen relevant */
+  topics?: string[];
 }
 
 export interface EventSource {

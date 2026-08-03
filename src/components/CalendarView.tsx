@@ -9,9 +9,11 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import multiMonthPlugin from "@fullcalendar/multimonth";
 import { VISIBILITY_GROUPS, type VisibilityGroup } from "@/lib/categories";
 import { EVENT_TYPE_INFO, EVENT_TYPE_ORDER } from "@/lib/event-types";
+import { PUBLICATION_TOPICS } from "@/lib/publication-topics";
 import type { EventType } from "@/generated/prisma/enums";
 
 const HIDDEN_GROUPS_STORAGE_KEY = "radar-hidden-groups";
+const HIDDEN_TOPICS_STORAGE_KEY = "radar-hidden-topics";
 
 function renderEventContent(arg: EventContentArg) {
   const type = arg.event.extendedProps.type as EventType | undefined;
@@ -41,6 +43,7 @@ export default function CalendarView() {
   const [activeView, setActiveView] = useState("multiMonthFour");
   const [allEvents, setAllEvents] = useState<EventInput[]>([]);
   const [hiddenGroups, setHiddenGroups] = useState<Set<VisibilityGroup>>(new Set());
+  const [hiddenTopics, setHiddenTopics] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     fetch("/api/events")
@@ -58,6 +61,10 @@ export default function CalendarView() {
       if (raw) {
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setHiddenGroups(new Set(JSON.parse(raw) as VisibilityGroup[]));
+      }
+      const rawTopics = localStorage.getItem(HIDDEN_TOPICS_STORAGE_KEY);
+      if (rawTopics) {
+        setHiddenTopics(new Set(JSON.parse(rawTopics) as string[]));
       }
     } catch {
       // localStorage nicht verfügbar (z.B. privater Modus) - Standard: alles sichtbar.
@@ -81,13 +88,41 @@ export default function CalendarView() {
     });
   }
 
+  function toggleTopic(topic: string) {
+    setHiddenTopics((prev) => {
+      const next = new Set(prev);
+      if (next.has(topic)) {
+        next.delete(topic);
+      } else {
+        next.add(topic);
+      }
+      try {
+        localStorage.setItem(HIDDEN_TOPICS_STORAGE_KEY, JSON.stringify([...next]));
+      } catch {
+        // ignore
+      }
+      return next;
+    });
+  }
+
   const visibleEvents = useMemo(
     () =>
       allEvents.filter((event) => {
         const group = event.extendedProps?.group as VisibilityGroup | undefined;
-        return !group || !hiddenGroups.has(group);
+        if (group && hiddenGroups.has(group)) return false;
+
+        // Themen-Filter gilt ausschließlich für Publikationen (andere
+        // Termine haben keine topics und bleiben davon unberührt). Eine
+        // Publikation mit mehreren Themen bleibt sichtbar, solange
+        // mindestens eines davon nicht ausgeblendet ist.
+        const topics = (event.extendedProps?.topics ?? []) as string[];
+        if (topics.length > 0 && topics.every((topic) => hiddenTopics.has(topic))) {
+          return false;
+        }
+
+        return true;
       }),
-    [allEvents, hiddenGroups]
+    [allEvents, hiddenGroups, hiddenTopics]
   );
 
   return (
@@ -138,6 +173,34 @@ export default function CalendarView() {
                   <Icon size={13} aria-hidden="true" />
                   {info.label}
                 </span>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="my-4 border-t border-slate-100" />
+
+        <div>
+          <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
+            Themen (nur Publikationen)
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {PUBLICATION_TOPICS.map((topic) => {
+              const hidden = hiddenTopics.has(topic);
+              return (
+                <button
+                  key={topic}
+                  type="button"
+                  onClick={() => toggleTopic(topic)}
+                  aria-pressed={!hidden}
+                  className={`rounded-full border px-2.5 py-1.5 text-xs font-medium transition-opacity ${
+                    hidden
+                      ? "border-slate-200 bg-white text-slate-400 opacity-50"
+                      : "border-[#ffab5e]/50 bg-[#fff3e6] text-[#b5591a]"
+                  }`}
+                >
+                  {topic}
+                </button>
               );
             })}
           </div>
@@ -217,6 +280,7 @@ export default function CalendarView() {
               | string
               | undefined;
             const participants = (info.event.extendedProps.participants ?? []) as string[];
+            const topics = (info.event.extendedProps.topics ?? []) as string[];
             const attachments = (info.event.extendedProps.attachments ?? []) as Array<{
               fileName: string;
             }>;
@@ -224,6 +288,7 @@ export default function CalendarView() {
             const parts = [[typeLabel, categoryLabel].filter(Boolean).join(" · ")];
             if (location) parts.push(`Ort: ${location}`);
             if (institutions) parts.push(`Institution(en): ${institutions}`);
+            if (topics.length > 0) parts.push(`Themen: ${topics.join(", ")}`);
             if (participants.length > 0) {
               parts.push(`Teilnehmer Kiel Institut: ${participants.join(", ")}`);
             }

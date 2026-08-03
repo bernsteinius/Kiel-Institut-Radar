@@ -56,6 +56,7 @@ export async function ingestAll(): Promise<IngestSummary[]> {
             sourceUrl: raw.sourceUrl,
             location: raw.location,
             institutions: raw.institutions,
+            topics: raw.topics ?? [],
           },
         });
         created += 1;

@@ -40,6 +40,7 @@ export default async function EditEventPage({
         priority: event.priority,
         confirmationStatus: event.confirmationStatus,
         participants: event.participants.join("\n"),
+        topics: event.topics,
         source: event.source ?? undefined,
         sourceUrl: event.sourceUrl ?? undefined,
       }}

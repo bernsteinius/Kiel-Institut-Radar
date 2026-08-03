@@ -1,4 +1,5 @@
 import type { EventSource, RawEvent } from "./types";
+import { PUBLICATION_TOPICS } from "@/lib/publication-topics";
 
 const BASE_URL = "https://www.kielinstitut.de/de/publikationen";
 
@@ -44,6 +45,47 @@ function parseTeasers(html: string): Teaser[] {
   return teasers;
 }
 
+/**
+ * Jede Publikationsseite hat eine eigene "Themen"-Sektion (Kiel-Institut-
+ * Taxonomie, siehe kielinstitut.de/de/themen/), unabhängig von der
+ * Haupt-Navigation, die dieselben Linktexte enthält. Wir grenzen daher
+ * gezielt den Abschnitt zwischen der "Themen"-Überschrift und der
+ * nächsten Abschnittsüberschrift ein, bevor wir die Themen-Titel
+ * herauslesen - eine Publikation kann mehreren Themen zugeordnet sein.
+ */
+function parseTopics(html: string): string[] {
+  const themenIdx = html.indexOf("<span>Themen</span>");
+  if (themenIdx === -1) return [];
+
+  const afterThemen = html.slice(themenIdx + "<span>Themen</span>".length);
+  const nextHeaderIdx = afterThemen.indexOf("element-header");
+  const section = nextHeaderIdx === -1 ? afterThemen : afterThemen.slice(0, nextHeaderIdx);
+
+  const topics: string[] = [];
+  const regex = /<h3 class="basic-teaser__headline h2">([^<]+)<\/h3>/g;
+  let match: RegExpExecArray | null;
+  while ((match = regex.exec(section))) {
+    const topic = match[1].trim();
+    if (PUBLICATION_TOPICS.includes(topic) && !topics.includes(topic)) {
+      topics.push(topic);
+    }
+  }
+
+  return topics;
+}
+
+async function fetchTopics(url: string): Promise<string[]> {
+  try {
+    const res = await fetch(url, {
+      headers: { "User-Agent": "Mozilla/5.0 (compatible; IfWKalenderBot/1.0)" },
+    });
+    if (!res.ok) return [];
+    return parseTopics(await res.text());
+  } catch {
+    return [];
+  }
+}
+
 // Feste untere Grenze statt "aktueller Monat", damit auch bereits im Jahr
 // 2026 erschienene Publikationen erfasst werden (kein Rückwirkendes Einlesen
 // der bestehenden mehreren tausend Titel aus den Vorjahren).
@@ -74,6 +116,10 @@ export const kielPublicationsSource: EventSource = {
           const date = new Date(Date.UTC(Number(yearStr), Number(monthStr) - 1, 1));
           if (date < CUTOFF) continue;
 
+          const sourceUrl = teaser.link.startsWith("http")
+            ? teaser.link
+            : `https://www.kielinstitut.de${teaser.link}`;
+
           events.push({
             title: `${series.label}: ${teaser.title}`,
             startDate: date,
@@ -83,9 +129,8 @@ export const kielPublicationsSource: EventSource = {
             source: "Kiel Institut",
             institutions: "Kiel Institut",
             location: "Kiel",
-            sourceUrl: teaser.link.startsWith("http")
-              ? teaser.link
-              : `https://www.kielinstitut.de${teaser.link}`,
+            sourceUrl,
+            topics: await fetchTopics(sourceUrl),
           });
         }
       } catch {

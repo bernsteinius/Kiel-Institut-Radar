@@ -115,6 +115,22 @@ export default async function EventDetailPage({
             </div>
           )}
 
+          {event.topics.length > 0 && (
+            <div className="mb-6">
+              <p className="mb-2 text-xs font-medium uppercase tracking-wide text-slate-400">Themen</p>
+              <div className="flex flex-wrap gap-2">
+                {event.topics.map((topic) => (
+                  <span
+                    key={topic}
+                    className="rounded-full border border-[#ffab5e]/40 bg-[#fff3e6] px-2.5 py-1 text-xs font-medium text-[#b5591a]"
+                  >
+                    {topic}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
           {event.description && (
             <div className="mb-6">
               <p className="mb-1 text-xs font-medium uppercase tracking-wide text-slate-400">Notizen</p>

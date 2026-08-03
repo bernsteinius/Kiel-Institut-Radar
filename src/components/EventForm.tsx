@@ -5,6 +5,7 @@ import { useActionState, useState } from "react";
 import type { CreateEventFormState } from "@/lib/actions/events";
 import { CATEGORY_INFO, CATEGORY_ORDER } from "@/lib/categories";
 import { EVENT_TYPE_INFO, EVENT_TYPE_ORDER } from "@/lib/event-types";
+import { PUBLICATION_TOPICS } from "@/lib/publication-topics";
 import type { EventType } from "@/generated/prisma/enums";
 
 export interface EventFormDefaults {
@@ -19,6 +20,7 @@ export interface EventFormDefaults {
   priority?: string;
   confirmationStatus?: string;
   participants?: string;
+  topics?: string[];
   source?: string;
   sourceUrl?: string;
 }
@@ -243,6 +245,28 @@ export default function EventForm({
               className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
             />
           </div>
+
+          {type === "PUBLICATION" && (
+            <div>
+              <p className="mb-2 block text-sm font-medium text-slate-700">
+                Themen (optional, Kiel-Institut-Taxonomie, Mehrfachauswahl möglich)
+              </p>
+              <div className="flex flex-wrap gap-x-4 gap-y-2">
+                {PUBLICATION_TOPICS.map((topic) => (
+                  <label key={topic} className="flex items-center gap-1.5 text-sm text-slate-700">
+                    <input
+                      type="checkbox"
+                      name="topics"
+                      value={topic}
+                      defaultChecked={defaultValues?.topics?.includes(topic)}
+                      className="rounded border-slate-300"
+                    />
+                    {topic}
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div>
             <label htmlFor="source" className="mb-1 block text-sm font-medium text-slate-700">

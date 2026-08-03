@@ -63,6 +63,9 @@ model Event {
   confirmationStatus ConfirmationStatus  @default(CONFIRMED)
   /// Teilnehmer Kiel Institut: manuell erfasste Namen, nur bei type=EVENT relevant
   participants       String[]            @default([])
+  /// Kiel-Institut-Themen (offizielle Taxonomie), nur bei type=PUBLICATION relevant,
+  /// eine Publikation kann mehreren Themen zugeordnet sein
+  topics             String[]            @default([])
   attachments        EventAttachment[]
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt

@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { CATEGORY_INFO } from "@/lib/categories";
 import { EVENT_TYPE_INFO } from "@/lib/event-types";
+import { PUBLICATION_TOPICS } from "@/lib/publication-topics";
 import type {
   EventCategory,
   EventType,
@@ -44,6 +45,7 @@ interface ParsedEventForm {
   priority: EventPriority;
   confirmationStatus: ConfirmationStatus;
   participants: string[];
+  topics: string[];
   attachments: File[];
 }
 
@@ -64,6 +66,7 @@ function parseEventForm(formData: FormData): ParsedEventForm | { error: string }
     .split("\n")
     .map((name) => name.trim())
     .filter(Boolean);
+  const topics = formData.getAll("topics").map(String).filter((t) => PUBLICATION_TOPICS.includes(t));
   const attachments = formData
     .getAll("sourcePdf")
     .filter((entry): entry is File => entry instanceof File && entry.size > 0);
@@ -119,6 +122,7 @@ function parseEventForm(formData: FormData): ParsedEventForm | { error: string }
     priority: priorityRaw,
     confirmationStatus: confirmationStatusRaw,
     participants,
+    topics,
     attachments,
   };
 }
@@ -159,6 +163,7 @@ export async function createEvent(
       priority: parsed.priority,
       confirmationStatus: parsed.confirmationStatus,
       participants: parsed.participants,
+      topics: parsed.topics,
     },
   });
 
@@ -203,6 +208,7 @@ export async function updateEvent(
       priority: parsed.priority,
       confirmationStatus: parsed.confirmationStatus,
       participants: parsed.participants,
+      topics: parsed.topics,
     },
   });
 
