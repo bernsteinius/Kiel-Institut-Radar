@@ -27,7 +27,7 @@ export default function CalendarView() {
       <div className="rounded-lg border border-[#b7c6e8] bg-[#edf1fa] p-3 shadow-sm">
         <FullCalendar
           plugins={[dayGridPlugin, timeGridPlugin, multiMonthPlugin]}
-          initialView="multiMonthThree"
+          initialView="multiMonthFour"
           views={{
             multiMonthTwo: {
               type: "multiMonth",
@@ -39,17 +39,23 @@ export default function CalendarView() {
               duration: { months: 3 },
               multiMonthMaxColumns: 3,
             },
+            multiMonthFour: {
+              type: "multiMonth",
+              duration: { months: 4 },
+              multiMonthMaxColumns: 2,
+            },
           }}
           headerToolbar={{
             left: "prev,next today",
             center: "title",
-            right: "timeGridWeek,dayGridMonth,multiMonthTwo,multiMonthThree",
+            right: "timeGridWeek,dayGridMonth,multiMonthTwo,multiMonthThree,multiMonthFour",
           }}
           buttonText={{
             week: "Woche",
             month: "Monat",
             multiMonthTwo: "2 Monate",
             multiMonthThree: "3 Monate",
+            multiMonthFour: "4 Monate",
           }}
           locale="de"
           firstDay={1}
