@@ -55,10 +55,13 @@ function parseIfwEvents(html: string): RawEvent[] {
       endDate,
       allDay: true,
       category: "IFW_EVENTS",
+      type: "EVENT",
       source: "IfW Kiel",
       sourceUrl: linkMatch
         ? `https://www.kielinstitut.de${linkMatch[1]}`
         : EVENTS_URL,
+      location: "Kiel Institut für Weltwirtschaft",
+      institutions: "Kiel Institut",
     });
   }
 

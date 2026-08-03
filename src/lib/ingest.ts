@@ -50,9 +50,12 @@ export async function ingestAll(): Promise<IngestSummary[]> {
             endDate: raw.endDate,
             allDay: raw.allDay ?? true,
             category: raw.category,
+            type: raw.type,
             status: "DRAFT",
             source: raw.source,
             sourceUrl: raw.sourceUrl,
+            location: raw.location,
+            institutions: raw.institutions,
           },
         });
         created += 1;

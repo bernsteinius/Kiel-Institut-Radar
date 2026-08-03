@@ -4,7 +4,8 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { CATEGORY_INFO } from "@/lib/categories";
-import type { EventCategory } from "@/generated/prisma/enums";
+import { EVENT_TYPE_INFO } from "@/lib/event-types";
+import type { EventCategory, EventType } from "@/generated/prisma/enums";
 
 export interface CreateEventFormState {
   error?: string;
@@ -20,6 +21,10 @@ function isEventCategory(value: string): value is EventCategory {
   return value in CATEGORY_INFO;
 }
 
+function isEventType(value: string): value is EventType {
+  return value in EVENT_TYPE_INFO;
+}
+
 export async function createEvent(
   _prevState: CreateEventFormState,
   formData: FormData
@@ -29,8 +34,13 @@ export async function createEvent(
   const startDateRaw = String(formData.get("startDate") ?? "");
   const endDateRaw = String(formData.get("endDate") ?? "");
   const categoryRaw = String(formData.get("category") ?? "");
+  const typeRaw = String(formData.get("type") ?? "");
   const source = String(formData.get("source") ?? "").trim();
   const sourceUrl = String(formData.get("sourceUrl") ?? "").trim();
+  const location = String(formData.get("location") ?? "").trim();
+  const institutions = String(formData.get("institutions") ?? "").trim();
+  const priorityRaw = String(formData.get("priority") ?? "MEDIUM");
+  const confirmationStatusRaw = String(formData.get("confirmationStatus") ?? "CONFIRMED");
   const attachments = formData
     .getAll("sourcePdf")
     .filter((entry): entry is File => entry instanceof File && entry.size > 0);
@@ -56,6 +66,18 @@ export async function createEvent(
     return { error: "Bitte eine gültige Kategorie auswählen." };
   }
 
+  if (!isEventType(typeRaw)) {
+    return { error: "Bitte einen gültigen Termin-Typ auswählen." };
+  }
+
+  if (priorityRaw !== "LOW" && priorityRaw !== "MEDIUM" && priorityRaw !== "HIGH") {
+    return { error: "Ungültige Priorität." };
+  }
+
+  if (confirmationStatusRaw !== "CONFIRMED" && confirmationStatusRaw !== "TENTATIVE") {
+    return { error: "Ungültiger Status." };
+  }
+
   if (!sourceUrl && attachments.length === 0) {
     return { error: "Bitte einen Link oder mindestens ein PDF als Quelle angeben." };
   }
@@ -71,9 +93,14 @@ export async function createEvent(
       startDate,
       endDate,
       category: categoryRaw,
+      type: typeRaw,
       status: "PUBLISHED",
       source: source || null,
       sourceUrl: sourceUrl || null,
+      location: location || null,
+      institutions: institutions || null,
+      priority: priorityRaw,
+      confirmationStatus: confirmationStatusRaw,
     },
   });
 

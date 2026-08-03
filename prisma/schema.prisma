@@ -25,20 +25,45 @@ enum EventStatus {
   PUBLISHED
 }
 
+enum EventType {
+  MEETING // Sitzung / Meeting
+  SUMMIT // Gipfel
+  DECISION // Entscheidung / Beschluss
+  EVENT // Veranstaltung
+  PUBLICATION // Paper / Publikation
+  DEADLINE // Frist
+}
+
+enum EventPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum ConfirmationStatus {
+  CONFIRMED
+  TENTATIVE
+}
+
 model Event {
-  id          String            @id @default(cuid())
-  title       String
-  description String?
-  startDate   DateTime
-  endDate     DateTime?
-  allDay      Boolean           @default(true)
-  category    EventCategory
-  status      EventStatus       @default(DRAFT)
-  source      String?
-  sourceUrl   String?
-  attachments EventAttachment[]
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
+  id                 String              @id @default(cuid())
+  title              String
+  description        String?
+  startDate          DateTime
+  endDate            DateTime?
+  allDay             Boolean             @default(true)
+  category           EventCategory
+  type               EventType           @default(EVENT)
+  status             EventStatus         @default(DRAFT)
+  source             String?
+  sourceUrl          String?
+  location           String?
+  institutions       String?
+  priority           EventPriority       @default(MEDIUM)
+  confirmationStatus ConfirmationStatus  @default(CONFIRMED)
+  attachments        EventAttachment[]
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
 
   @@index([status])
   @@index([startDate])

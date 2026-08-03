@@ -1,4 +1,4 @@
-import { EventCategory } from "@/generated/prisma/enums";
+import { EventCategory, EventType } from "@/generated/prisma/enums";
 
 export interface RawEvent {
   title: string;
@@ -7,8 +7,11 @@ export interface RawEvent {
   endDate?: Date;
   allDay?: boolean;
   category: EventCategory;
+  type: EventType;
   source: string;
   sourceUrl?: string;
+  location?: string;
+  institutions?: string;
 }
 
 export interface EventSource {

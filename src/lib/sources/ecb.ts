@@ -25,8 +25,11 @@ function parseEcbCalendar(html: string): RawEvent[] {
       startDate: new Date(Date.UTC(Number(year), Number(month) - 1, Number(day))),
       allDay: true,
       category: "MONETARY_POLICY",
+      type: "MEETING",
       source: "EZB",
       sourceUrl: CALENDAR_URL,
+      location: "Frankfurt am Main",
+      institutions: "EZB",
     });
   }
 

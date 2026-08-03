@@ -1,4 +1,5 @@
 import type { EventSource, RawEvent } from "./types";
+import type { EventType } from "@/generated/prisma/enums";
 
 /**
  * G7- und G20-Gipfel wechseln jährlich die Gastgeber-Präsidentschaft und
@@ -15,18 +16,21 @@ const SUMMITS: Array<{
   start: [number, number, number];
   end: [number, number, number];
   sourceUrl: string;
+  type: EventType;
 }> = [
   {
     title: "G20 Foreign Ministers' Meeting 2026 (Atlanta, USA)",
     start: [2026, 10, 30],
     end: [2026, 10, 31],
     sourceUrl: "https://g20.org/events-calendar/",
+    type: "MEETING",
   },
   {
     title: "G20-Gipfel 2026 (Miami, USA)",
     start: [2026, 12, 14],
     end: [2026, 12, 15],
     sourceUrl: "https://g20.org/",
+    type: "SUMMIT",
   },
 ];
 
@@ -39,8 +43,10 @@ export const g7g20Source: EventSource = {
       endDate: new Date(Date.UTC(summit.end[0], summit.end[1] - 1, summit.end[2])),
       allDay: true,
       category: "INSTITUTIONS",
+      type: summit.type,
       source: "G7/G20",
       sourceUrl: summit.sourceUrl,
+      institutions: "G7/G20",
     }));
   },
 };

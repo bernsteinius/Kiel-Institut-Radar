@@ -41,6 +41,7 @@ export const topicsSource: EventSource = {
             startDate: date,
             allDay: true,
             category: topic.category,
+            type: "EVENT",
             source: topic.name,
             sourceUrl: topic.url,
           });

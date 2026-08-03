@@ -7,6 +7,7 @@ import { euCouncilSource } from "./eu-council";
 import { g7g20Source } from "./g7-g20";
 import { annualConferencesSource } from "./annual-conferences";
 import { topicsSource } from "./topics";
+import { kielPublicationsSource } from "./kiel-publications";
 
 export type { RawEvent, EventSource } from "./types";
 
@@ -33,4 +34,5 @@ export const sources = [
   g7g20Source,
   annualConferencesSource,
   topicsSource,
+  kielPublicationsSource,
 ];

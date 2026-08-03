@@ -43,8 +43,10 @@ export const imfWorldBankSource: EventSource = {
       endDate: new Date(Date.UTC(meeting.end[0], meeting.end[1] - 1, meeting.end[2])),
       allDay: true,
       category: "INSTITUTIONS",
+      type: "SUMMIT",
       source: "IWF/Weltbank",
       sourceUrl: meeting.sourceUrl,
+      institutions: "IWF, Weltbank",
     }));
   },
 };

@@ -75,10 +75,13 @@ export const natoSource: EventSource = {
           endDate && endDate.getTime() !== startDate.getTime() ? endDate : undefined,
         allDay: true,
         category: "SECURITY_DEFENSE",
+        type: /summit/i.test(page.title) ? "SUMMIT" : "MEETING",
         source: "NATO",
         sourceUrl: page.link
           ? `https://www.nato.int${page.link.split("?")[0]}`
           : SEARCH_ENDPOINT,
+        location: location || undefined,
+        institutions: "NATO",
       });
     }
 

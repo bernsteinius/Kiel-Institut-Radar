@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { CATEGORY_INFO } from "@/lib/categories";
+import { EVENT_TYPE_INFO } from "@/lib/event-types";
 
 export const dynamic = "force-dynamic";
 
@@ -42,8 +43,14 @@ export async function GET() {
       description: event.description,
       category: event.category,
       categoryLabel: CATEGORY_INFO[event.category].label,
+      type: event.type,
+      typeLabel: EVENT_TYPE_INFO[event.type].label,
       source: event.source,
       sourceUrl: event.sourceUrl,
+      location: event.location,
+      institutions: event.institutions,
+      priority: event.priority,
+      confirmationStatus: event.confirmationStatus,
       attachments: event.attachments.map((a) => ({
         id: a.id,
         fileName: a.fileName,

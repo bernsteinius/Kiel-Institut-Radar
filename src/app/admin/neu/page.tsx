@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useActionState } from "react";
 import { createEvent, type CreateEventFormState } from "@/lib/actions/events";
 import { CATEGORY_INFO, CATEGORY_ORDER } from "@/lib/categories";
+import { EVENT_TYPE_INFO, EVENT_TYPE_ORDER } from "@/lib/event-types";
 
 const initialState: CreateEventFormState = {};
 
@@ -78,26 +79,105 @@ export default function NewEventPage() {
             </div>
           </div>
 
-          <div>
-            <label htmlFor="category" className="mb-1 block text-sm font-medium text-slate-700">
-              Kategorie
-            </label>
-            <select
-              id="category"
-              name="category"
-              required
-              defaultValue=""
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
-            >
-              <option value="" disabled>
-                Bitte wählen…
-              </option>
-              {CATEGORY_ORDER.map((category) => (
-                <option key={category} value={category}>
-                  {CATEGORY_INFO[category].label}
+          <div className="flex gap-4">
+            <div className="flex-1">
+              <label htmlFor="category" className="mb-1 block text-sm font-medium text-slate-700">
+                Kategorie
+              </label>
+              <select
+                id="category"
+                name="category"
+                required
+                defaultValue=""
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
+              >
+                <option value="" disabled>
+                  Bitte wählen…
                 </option>
-              ))}
-            </select>
+                {CATEGORY_ORDER.map((category) => (
+                  <option key={category} value={category}>
+                    {CATEGORY_INFO[category].label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="flex-1">
+              <label htmlFor="type" className="mb-1 block text-sm font-medium text-slate-700">
+                Termin-Typ
+              </label>
+              <select
+                id="type"
+                name="type"
+                required
+                defaultValue="EVENT"
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
+              >
+                {EVENT_TYPE_ORDER.map((type) => (
+                  <option key={type} value={type}>
+                    {EVENT_TYPE_INFO[type].label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="flex gap-4">
+            <div className="flex-1">
+              <label htmlFor="location" className="mb-1 block text-sm font-medium text-slate-700">
+                Ort (optional)
+              </label>
+              <input
+                id="location"
+                name="location"
+                type="text"
+                placeholder="z. B. Brüssel"
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
+              />
+            </div>
+            <div className="flex-1">
+              <label htmlFor="institutions" className="mb-1 block text-sm font-medium text-slate-700">
+                Institution(en) (optional)
+              </label>
+              <input
+                id="institutions"
+                name="institutions"
+                type="text"
+                placeholder="z. B. EZB, EU-Rat"
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
+              />
+            </div>
+          </div>
+
+          <div className="flex gap-4">
+            <div className="flex-1">
+              <label htmlFor="priority" className="mb-1 block text-sm font-medium text-slate-700">
+                Priorität
+              </label>
+              <select
+                id="priority"
+                name="priority"
+                defaultValue="MEDIUM"
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
+              >
+                <option value="LOW">Niedrig</option>
+                <option value="MEDIUM">Mittel</option>
+                <option value="HIGH">Hoch</option>
+              </select>
+            </div>
+            <div className="flex-1">
+              <label htmlFor="confirmationStatus" className="mb-1 block text-sm font-medium text-slate-700">
+                Status
+              </label>
+              <select
+                id="confirmationStatus"
+                name="confirmationStatus"
+                defaultValue="CONFIRMED"
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
+              >
+                <option value="CONFIRMED">Bestätigt</option>
+                <option value="TENTATIVE">Vorläufig</option>
+              </select>
+            </div>
           </div>
 
           <div>

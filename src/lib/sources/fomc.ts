@@ -50,8 +50,11 @@ function parseFomcCalendar(html: string): RawEvent[] {
       startDate: new Date(Date.UTC(year, monthIndex, Number(dayMatch[0]))),
       allDay: true,
       category: "MONETARY_POLICY",
+      type: "DECISION",
       source: "FED/FOMC",
       sourceUrl: CALENDAR_URL,
+      location: "Washington, D.C.",
+      institutions: "Federal Reserve (FOMC)",
     });
   }
 
