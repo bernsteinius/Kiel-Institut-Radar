@@ -95,7 +95,7 @@ export default function CalendarView() {
       <div className="mb-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
         <div>
           <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
-            Kalender ein-/ausblenden
+            Kategorie ein-/ausblenden
           </p>
           <div className="flex flex-wrap gap-2">
             {VISIBILITY_GROUPS.map(({ key, label, color }) => {

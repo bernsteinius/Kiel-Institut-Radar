@@ -15,11 +15,10 @@ export default function Home() {
               width={140}
               height={49}
             />
-            <div>
-              <h1 className="text-xl font-semibold text-slate-900">
-                Kiel Institut Radar
-              </h1>
-            </div>
+            <div className="hidden h-10 w-px bg-slate-300 sm:block" />
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+              Kiel Institut <span className="text-[#ff6a00]">Radar</span>
+            </h1>
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <Link
