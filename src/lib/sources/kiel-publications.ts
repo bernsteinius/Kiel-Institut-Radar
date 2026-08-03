@@ -1,5 +1,5 @@
 import type { EventSource, RawEvent } from "./types";
-import { PUBLICATION_TOPICS, SOURCE_TOPIC_ALIASES, detectHeuristicTopics } from "@/lib/publication-topics";
+import { PUBLICATION_TOPICS } from "@/lib/publication-topics";
 
 const BASE_URL = "https://www.kielinstitut.de/de/publikationen";
 
@@ -46,27 +46,24 @@ function parseTeasers(html: string): Teaser[] {
 }
 
 /**
- * Jede Publikationsseite hat eine eigene "Themen"-Sektion (Kiel-Institut-
- * Taxonomie, siehe kielinstitut.de/de/themen/), unabhängig von der
- * Haupt-Navigation, die dieselben Linktexte enthält. Wir grenzen daher
- * gezielt den Abschnitt zwischen der "Themen"-Überschrift und der
- * nächsten Abschnittsüberschrift ein, bevor wir die Themen-Titel
- * herauslesen - eine Publikation kann mehreren Themen zugeordnet sein.
+ * Jede Publikationsseite hat unter "Mehr zum Thema" einen
+ * "publication-page-topics"-Block mit den echten Themen-Schlagworten der
+ * Publikation - dieselbe Taxonomie wie die "topic"-Facette der
+ * Publikations-Suche (kielinstitut.de/de/suche/, gefiltert auf
+ * Inhaltstyp=Publikationen). Eine Publikation kann mehreren Themen
+ * zugeordnet sein.
  */
 function parseTopics(html: string): string[] {
-  const themenIdx = html.indexOf("<span>Themen</span>");
-  if (themenIdx === -1) return [];
-
-  const afterThemen = html.slice(themenIdx + "<span>Themen</span>".length);
-  const nextHeaderIdx = afterThemen.indexOf("element-header");
-  const section = nextHeaderIdx === -1 ? afterThemen : afterThemen.slice(0, nextHeaderIdx);
+  const blockMatch = html.match(
+    /<div class="publication-page-topics[^"]*">([\s\S]*?)<\/div>/
+  );
+  if (!blockMatch) return [];
 
   const topics: string[] = [];
-  const regex = /<h3 class="basic-teaser__headline h2">([^<]+)<\/h3>/g;
+  const regex = /<p>([^<]+)<\/p>/g;
   let match: RegExpExecArray | null;
-  while ((match = regex.exec(section))) {
-    const rawTopic = match[1].trim();
-    const topic = SOURCE_TOPIC_ALIASES[rawTopic] ?? rawTopic;
+  while ((match = regex.exec(blockMatch[1]))) {
+    const topic = match[1].trim().replace(/&amp;/g, "&");
     if (PUBLICATION_TOPICS.includes(topic) && !topics.includes(topic)) {
       topics.push(topic);
     }
@@ -122,10 +119,6 @@ export const kielPublicationsSource: EventSource = {
             : `https://www.kielinstitut.de${teaser.link}`;
           const title = `${series.label}: ${teaser.title}`;
 
-          const officialTopics = await fetchTopics(sourceUrl);
-          const heuristicTopics = detectHeuristicTopics(title);
-          const topics = [...officialTopics, ...heuristicTopics.filter((t) => !officialTopics.includes(t))];
-
           events.push({
             title,
             startDate: date,
@@ -136,7 +129,7 @@ export const kielPublicationsSource: EventSource = {
             institutions: "Kiel Institut",
             location: "Kiel",
             sourceUrl,
-            topics,
+            topics: await fetchTopics(sourceUrl),
           });
         }
       } catch {
