@@ -24,6 +24,7 @@ export async function GET() {
   const events = await prisma.event.findMany({
     where: { status: "PUBLISHED" },
     orderBy: { startDate: "asc" },
+    include: { attachments: { select: { id: true, fileName: true } } },
   });
 
   const calendarEvents = events.map((event) => ({
@@ -43,6 +44,11 @@ export async function GET() {
       categoryLabel: CATEGORY_INFO[event.category].label,
       source: event.source,
       sourceUrl: event.sourceUrl,
+      attachments: event.attachments.map((a) => ({
+        id: a.id,
+        fileName: a.fileName,
+        url: `/api/attachments/${a.id}`,
+      })),
     },
   }));
 

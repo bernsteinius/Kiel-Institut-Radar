@@ -26,19 +26,44 @@ enum EventStatus {
 }
 
 model Event {
-  id          String         @id @default(cuid())
+  id          String            @id @default(cuid())
   title       String
   description String?
   startDate   DateTime
   endDate     DateTime?
-  allDay      Boolean        @default(true)
+  allDay      Boolean           @default(true)
   category    EventCategory
-  status      EventStatus    @default(DRAFT)
+  status      EventStatus       @default(DRAFT)
   source      String?
   sourceUrl   String?
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  attachments EventAttachment[]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
 
   @@index([status])
   @@index([startDate])
+}
+
+/// Hochgeladene PDF-Quellennachweise zu einem manuell angelegten Termin.
+/// Ein Event kann mehrere Anhänge haben.
+model EventAttachment {
+  id        String   @id @default(cuid())
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId   String
+  fileName  String
+  fileType  String
+  data      Bytes
+  createdAt DateTime @default(now())
+
+  @@index([eventId])
+}
+
+/// Von Nutzern hinzugefügte Suchthemen: der tägliche Job liest die
+/// angegebene URL und sucht dort heuristisch nach Datumsangaben.
+model Topic {
+  id        String        @id @default(cuid())
+  name      String
+  url       String
+  category  EventCategory @default(OTHER)
+  createdAt DateTime      @default(now())
 }

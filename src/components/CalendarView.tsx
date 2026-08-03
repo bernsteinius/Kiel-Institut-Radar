@@ -66,9 +66,28 @@ export default function CalendarView() {
               | string
               | undefined;
             const categoryLabel = info.event.extendedProps.categoryLabel as string;
+            const attachments = (info.event.extendedProps.attachments ?? []) as Array<{
+              fileName: string;
+            }>;
             const parts = [categoryLabel];
             if (description) parts.push(description);
+            if (attachments.length > 0) {
+              parts.push(`Quelle: ${attachments.map((a) => a.fileName).join(", ")}`);
+            }
             info.el.setAttribute("title", parts.join("\n"));
+            if (info.event.extendedProps.sourceUrl || attachments.length > 0) {
+              info.el.style.cursor = "pointer";
+            }
+          }}
+          eventClick={(info) => {
+            const sourceUrl = info.event.extendedProps.sourceUrl as string | undefined;
+            const attachments = (info.event.extendedProps.attachments ?? []) as Array<{
+              url: string;
+            }>;
+            const target = sourceUrl || attachments[0]?.url;
+            if (target) {
+              window.open(target, "_blank", "noopener,noreferrer");
+            }
           }}
         />
       </div>
