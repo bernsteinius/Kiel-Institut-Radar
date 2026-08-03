@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { CATEGORY_INFO } from "@/lib/categories";
+import { CATEGORY_INFO, resolveEventColor } from "@/lib/categories";
 import { EVENT_TYPE_INFO } from "@/lib/event-types";
 
 export const dynamic = "force-dynamic";
@@ -38,7 +38,7 @@ export async function GET() {
         : event.endDate
       : undefined,
     allDay: event.allDay,
-    color: CATEGORY_INFO[event.category].color,
+    color: resolveEventColor(event.category, event.type),
     extendedProps: {
       description: event.description,
       category: event.category,

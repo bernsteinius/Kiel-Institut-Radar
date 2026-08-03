@@ -1,32 +1,43 @@
 "use client";
 
+import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import FullCalendar from "@fullcalendar/react";
-import type { EventContentArg } from "@fullcalendar/core";
+import type { DatesSetArg, EventContentArg } from "@fullcalendar/core";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import multiMonthPlugin from "@fullcalendar/multimonth";
-import { CATEGORY_INFO, CATEGORY_ORDER } from "@/lib/categories";
+import { CATEGORY_INFO, CATEGORY_ORDER, PUBLICATION_COLOR } from "@/lib/categories";
 import { EVENT_TYPE_INFO, EVENT_TYPE_ORDER } from "@/lib/event-types";
 import type { EventType } from "@/generated/prisma/enums";
 
 function renderEventContent(arg: EventContentArg) {
   const type = arg.event.extendedProps.type as EventType | undefined;
   const Icon = type ? EVENT_TYPE_INFO[type].icon : undefined;
-  const color = arg.event.backgroundColor || arg.event.borderColor || "#64748b";
 
   return (
-    <div className="flex min-w-0 items-center gap-1">
-      {Icon && <Icon size={12} color={color} className="shrink-0" aria-hidden="true" />}
-      <span
-        className="inline-block h-1.5 w-1.5 shrink-0 rounded-full"
-        style={{ backgroundColor: color }}
-      />
+    <div className="flex min-w-0 items-center gap-1.5 px-0.5">
+      {Icon && (
+        <Icon size={13} color="#ffffff" strokeWidth={2.25} className="shrink-0" aria-hidden="true" />
+      )}
       <span className="truncate">{arg.event.title}</span>
     </div>
   );
 }
 
+const VIEW_SWITCHER: Array<{ view: string; label: string }> = [
+  { view: "timeGridWeek", label: "Woche" },
+  { view: "dayGridMonth", label: "Monat" },
+  { view: "multiMonthTwo", label: "2 Monate" },
+  { view: "multiMonthThree", label: "3 Monate" },
+  { view: "multiMonthFour", label: "4 Monate" },
+];
+
 export default function CalendarView() {
+  const router = useRouter();
+  const calendarRef = useRef<FullCalendar | null>(null);
+  const [activeView, setActiveView] = useState("multiMonthFour");
+
   return (
     <div>
       <div className="mb-2 flex flex-wrap gap-3">
@@ -42,6 +53,13 @@ export default function CalendarView() {
             </span>
           );
         })}
+        <span className="flex items-center gap-1.5 text-xs text-slate-600">
+          <span
+            className="inline-block h-2.5 w-2.5 rounded-full"
+            style={{ backgroundColor: PUBLICATION_COLOR }}
+          />
+          Publikationen (alle Kategorien)
+        </span>
       </div>
 
       <div className="mb-4 flex flex-wrap gap-3">
@@ -57,8 +75,26 @@ export default function CalendarView() {
         })}
       </div>
 
+      <div className="mb-3 flex flex-wrap gap-2">
+        {VIEW_SWITCHER.map(({ view, label }) => (
+          <button
+            key={view}
+            type="button"
+            onClick={() => calendarRef.current?.getApi().changeView(view)}
+            className={`rounded-md px-3 py-1.5 text-sm font-medium ${
+              activeView === view
+                ? "bg-[#194abb] text-white"
+                : "border border-[#194abb]/30 bg-white text-[#194abb] hover:bg-[#edf1fa]"
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
       <div className="rounded-lg border border-[#b7c6e8] bg-[#edf1fa] p-3 shadow-sm">
         <FullCalendar
+          ref={calendarRef}
           plugins={[dayGridPlugin, timeGridPlugin, multiMonthPlugin]}
           initialView="multiMonthFour"
           views={{
@@ -66,35 +102,33 @@ export default function CalendarView() {
               type: "multiMonth",
               duration: { months: 2 },
               multiMonthMaxColumns: 2,
+              aspectRatio: 0.5,
             },
             multiMonthThree: {
               type: "multiMonth",
               duration: { months: 3 },
               multiMonthMaxColumns: 3,
+              aspectRatio: 0.5,
             },
             multiMonthFour: {
               type: "multiMonth",
               duration: { months: 4 },
               multiMonthMaxColumns: 2,
+              aspectRatio: 0.5,
             },
           }}
           headerToolbar={{
             left: "prev,next today",
             center: "title",
-            right: "timeGridWeek,dayGridMonth,multiMonthTwo,multiMonthThree,multiMonthFour",
-          }}
-          buttonText={{
-            week: "Woche",
-            month: "Monat",
-            multiMonthTwo: "2 Monate",
-            multiMonthThree: "3 Monate",
-            multiMonthFour: "4 Monate",
+            right: "",
           }}
           locale="de"
           firstDay={1}
           height="auto"
+          dayMaxEvents={false}
           events="/api/events"
           eventContent={renderEventContent}
+          datesSet={(arg: DatesSetArg) => setActiveView(arg.view.type)}
           eventDidMount={(info) => {
             const description = info.event.extendedProps.description as
               | string
@@ -123,19 +157,11 @@ export default function CalendarView() {
               parts.push(`Quelle: ${attachments.map((a) => a.fileName).join(", ")}`);
             }
             info.el.setAttribute("title", parts.join("\n"));
-            if (info.event.extendedProps.sourceUrl || attachments.length > 0) {
-              info.el.style.cursor = "pointer";
-            }
+            info.el.style.cursor = "pointer";
           }}
           eventClick={(info) => {
-            const sourceUrl = info.event.extendedProps.sourceUrl as string | undefined;
-            const attachments = (info.event.extendedProps.attachments ?? []) as Array<{
-              url: string;
-            }>;
-            const target = sourceUrl || attachments[0]?.url;
-            if (target) {
-              window.open(target, "_blank", "noopener,noreferrer");
-            }
+            info.jsEvent.preventDefault();
+            router.push(`/termine/${info.event.id}`);
           }}
         />
       </div>
