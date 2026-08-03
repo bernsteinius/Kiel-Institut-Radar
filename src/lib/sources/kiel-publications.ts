@@ -1,5 +1,5 @@
 import type { EventSource, RawEvent } from "./types";
-import { PUBLICATION_TOPICS } from "@/lib/publication-topics";
+import { PUBLICATION_TOPICS, detectHeuristicTopics } from "@/lib/publication-topics";
 
 const BASE_URL = "https://www.kielinstitut.de/de/publikationen";
 
@@ -119,9 +119,14 @@ export const kielPublicationsSource: EventSource = {
           const sourceUrl = teaser.link.startsWith("http")
             ? teaser.link
             : `https://www.kielinstitut.de${teaser.link}`;
+          const title = `${series.label}: ${teaser.title}`;
+
+          const officialTopics = await fetchTopics(sourceUrl);
+          const heuristicTopics = detectHeuristicTopics(title);
+          const topics = [...officialTopics, ...heuristicTopics.filter((t) => !officialTopics.includes(t))];
 
           events.push({
-            title: `${series.label}: ${teaser.title}`,
+            title,
             startDate: date,
             allDay: true,
             category: "IFW_EVENTS",
@@ -130,7 +135,7 @@ export const kielPublicationsSource: EventSource = {
             institutions: "Kiel Institut",
             location: "Kiel",
             sourceUrl,
-            topics: await fetchTopics(sourceUrl),
+            topics,
           });
         }
       } catch {
