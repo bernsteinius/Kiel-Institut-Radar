@@ -32,6 +32,13 @@ body {
   justify-content: center;
 }
 
+/* In der Wochenansicht schrumpfen die Tageszellen mit height="auto" auf die
+   Mindesthöhe ihres Inhalts (oft nur eine Zeile) - hier zusätzlich Platz
+   erzwingen, damit die Woche nicht wie ein schmaler Streifen wirkt. */
+.fc-dayGridWeek-view .fc-daygrid-day-frame {
+  min-height: 300px;
+}
+
 /* FullCalendar-Buttons (Woche/Monat/..., Navigation) auf Kiel-Blau statt
    FullCalendars grauem Standard-Grau umstellen. */
 .fc {
