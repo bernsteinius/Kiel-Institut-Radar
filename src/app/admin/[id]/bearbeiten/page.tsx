@@ -53,8 +53,8 @@ export default async function EditEventPage({
           ? "Änderungen werden gespeichert - der Entwurf muss danach weiterhin separat freigegeben werden."
           : "Änderungen sind sofort im Kalender sichtbar."
       }
-      backHref="/admin"
-      backLabel="Zurück zur Freigabe"
+      backHref={event.status === "DRAFT" ? "/admin" : `/termine/${event.id}`}
+      backLabel={event.status === "DRAFT" ? "Zurück zur Freigabe" : "Zurück zum Termin"}
       submitLabel="Änderungen speichern"
       submitPendingLabel="Speichere…"
     />

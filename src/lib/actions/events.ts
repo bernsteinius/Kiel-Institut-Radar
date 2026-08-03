@@ -177,6 +177,11 @@ export async function updateEvent(
   const parsed = parseEventForm(formData);
   if ("error" in parsed) return parsed;
 
+  const existing = await prisma.event.findUnique({ where: { id }, select: { status: true } });
+  if (!existing) {
+    return { error: "Termin wurde nicht gefunden." };
+  }
+
   const existingAttachmentCount = await prisma.eventAttachment.count({ where: { eventId: id } });
   if (!parsed.sourceUrl && parsed.attachments.length === 0 && existingAttachmentCount === 0) {
     return { error: "Bitte einen Link oder mindestens ein PDF als Quelle angeben." };
@@ -205,7 +210,12 @@ export async function updateEvent(
 
   revalidatePath("/admin");
   revalidatePath("/");
-  redirect("/admin");
+  revalidatePath(`/termine/${id}`);
+
+  if (existing.status === "DRAFT") {
+    redirect("/admin");
+  }
+  redirect(`/termine/${id}`);
 }
 
 export async function approveEvent(id: string) {

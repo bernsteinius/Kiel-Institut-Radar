@@ -230,21 +230,19 @@ export default function EventForm({
             </div>
           </div>
 
-          {type === "EVENT" && (
-            <div>
-              <label htmlFor="participants" className="mb-1 block text-sm font-medium text-slate-700">
-                Teilnehmer Kiel Institut (optional, ein Name pro Zeile)
-              </label>
-              <textarea
-                id="participants"
-                name="participants"
-                rows={3}
-                defaultValue={defaultValues?.participants}
-                placeholder={"Max Mustermann\nErika Musterfrau"}
-                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
-              />
-            </div>
-          )}
+          <div>
+            <label htmlFor="participants" className="mb-1 block text-sm font-medium text-slate-700">
+              Teilnehmer Kiel Institut (optional, ein Name pro Zeile)
+            </label>
+            <textarea
+              id="participants"
+              name="participants"
+              rows={3}
+              defaultValue={defaultValues?.participants}
+              placeholder={"Max Mustermann\nErika Musterfrau"}
+              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
+            />
+          </div>
 
           <div>
             <label htmlFor="source" className="mb-1 block text-sm font-medium text-slate-700">

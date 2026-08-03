@@ -1,15 +1,17 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import FullCalendar from "@fullcalendar/react";
-import type { DatesSetArg, EventContentArg } from "@fullcalendar/core";
+import type { DatesSetArg, EventContentArg, EventInput } from "@fullcalendar/core";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import multiMonthPlugin from "@fullcalendar/multimonth";
-import { CATEGORY_INFO, CATEGORY_ORDER, PUBLICATION_COLOR } from "@/lib/categories";
+import { VISIBILITY_GROUPS, type VisibilityGroup } from "@/lib/categories";
 import { EVENT_TYPE_INFO, EVENT_TYPE_ORDER } from "@/lib/event-types";
 import type { EventType } from "@/generated/prisma/enums";
+
+const HIDDEN_GROUPS_STORAGE_KEY = "radar-hidden-groups";
 
 function renderEventContent(arg: EventContentArg) {
   const type = arg.event.extendedProps.type as EventType | undefined;
@@ -37,29 +39,85 @@ export default function CalendarView() {
   const router = useRouter();
   const calendarRef = useRef<FullCalendar | null>(null);
   const [activeView, setActiveView] = useState("multiMonthFour");
+  const [allEvents, setAllEvents] = useState<EventInput[]>([]);
+  const [hiddenGroups, setHiddenGroups] = useState<Set<VisibilityGroup>>(new Set());
+
+  useEffect(() => {
+    fetch("/api/events")
+      .then((res) => res.json())
+      .then(setAllEvents);
+  }, []);
+
+  useEffect(() => {
+    // Einmaliges Hydrieren der Sichtbarkeits-Auswahl aus localStorage nach
+    // dem ersten Render (server-seitig gibt es kein localStorage, daher
+    // erst hier statt in einem lazy useState-Initializer, um einen
+    // Hydration-Mismatch zu vermeiden).
+    try {
+      const raw = localStorage.getItem(HIDDEN_GROUPS_STORAGE_KEY);
+      if (raw) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setHiddenGroups(new Set(JSON.parse(raw) as VisibilityGroup[]));
+      }
+    } catch {
+      // localStorage nicht verfügbar (z.B. privater Modus) - Standard: alles sichtbar.
+    }
+  }, []);
+
+  function toggleGroup(key: VisibilityGroup) {
+    setHiddenGroups((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) {
+        next.delete(key);
+      } else {
+        next.add(key);
+      }
+      try {
+        localStorage.setItem(HIDDEN_GROUPS_STORAGE_KEY, JSON.stringify([...next]));
+      } catch {
+        // ignore
+      }
+      return next;
+    });
+  }
+
+  const visibleEvents = useMemo(
+    () =>
+      allEvents.filter((event) => {
+        const group = event.extendedProps?.group as VisibilityGroup | undefined;
+        return !group || !hiddenGroups.has(group);
+      }),
+    [allEvents, hiddenGroups]
+  );
 
   return (
     <div>
-      <div className="mb-2 flex flex-wrap gap-3">
-        {CATEGORY_ORDER.map((category) => {
-          const info = CATEGORY_INFO[category];
+      <p className="mb-2 text-xs font-medium text-slate-500">
+        Kalender ein-/ausblenden:
+      </p>
+      <div className="mb-4 flex flex-wrap gap-2">
+        {VISIBILITY_GROUPS.map(({ key, label, color }) => {
+          const hidden = hiddenGroups.has(key);
           return (
-            <span key={category} className="flex items-center gap-1.5 text-xs text-slate-600">
+            <button
+              key={key}
+              type="button"
+              onClick={() => toggleGroup(key)}
+              aria-pressed={!hidden}
+              className={`flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition-opacity ${
+                hidden
+                  ? "border-slate-200 bg-white text-slate-400 opacity-50"
+                  : "border-slate-300 bg-white text-slate-700"
+              }`}
+            >
               <span
-                className="inline-block h-2.5 w-2.5 rounded-full"
-                style={{ backgroundColor: info.color }}
+                className="inline-block h-2.5 w-2.5 shrink-0 rounded-full"
+                style={{ backgroundColor: color }}
               />
-              {info.label}
-            </span>
+              {label}
+            </button>
           );
         })}
-        <span className="flex items-center gap-1.5 text-xs text-slate-600">
-          <span
-            className="inline-block h-2.5 w-2.5 rounded-full"
-            style={{ backgroundColor: PUBLICATION_COLOR }}
-          />
-          Publikationen (alle Kategorien)
-        </span>
       </div>
 
       <div className="mb-4 flex flex-wrap gap-3">
@@ -75,7 +133,7 @@ export default function CalendarView() {
         })}
       </div>
 
-      <div className="mb-3 flex flex-wrap gap-2">
+      <div className="mb-3 flex flex-wrap gap-2 sm:hidden">
         {VIEW_SWITCHER.map(({ view, label }) => (
           <button
             key={view}
@@ -120,13 +178,20 @@ export default function CalendarView() {
           headerToolbar={{
             left: "prev,next today",
             center: "title",
-            right: "",
+            right: "timeGridWeek,dayGridMonth,multiMonthTwo,multiMonthThree,multiMonthFour",
+          }}
+          buttonText={{
+            week: "Woche",
+            month: "Monat",
+            multiMonthTwo: "2 Monate",
+            multiMonthThree: "3 Monate",
+            multiMonthFour: "4 Monate",
           }}
           locale="de"
           firstDay={1}
           height="auto"
           dayMaxEvents={false}
-          events="/api/events"
+          events={visibleEvents}
           eventContent={renderEventContent}
           datesSet={(arg: DatesSetArg) => setActiveView(arg.view.type)}
           eventDidMount={(info) => {

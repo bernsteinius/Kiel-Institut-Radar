@@ -53,7 +53,9 @@ export default async function EventDetailPage({
           <div className="mb-3 flex flex-wrap items-center gap-2 text-xs font-medium">
             <span
               className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-white"
-              style={{ backgroundColor: resolveEventColor(event.category, event.type) }}
+              style={{
+                backgroundColor: resolveEventColor(event.category, event.type, event.institutions),
+              }}
             >
               {categoryInfo.label}
             </span>
@@ -100,7 +102,7 @@ export default async function EventDetailPage({
             </div>
           </dl>
 
-          {event.type === "EVENT" && event.participants.length > 0 && (
+          {event.participants.length > 0 && (
             <div className="mb-6 rounded-md border border-[#194abb]/30 bg-[#edf1fa] p-4">
               <p className="mb-2 text-xs font-medium uppercase tracking-wide text-[#194abb]">
                 Teilnehmer Kiel Institut
@@ -151,16 +153,14 @@ export default async function EventDetailPage({
             </div>
           )}
 
-          {event.status === "DRAFT" && (
-            <div className="mt-6 border-t border-slate-100 pt-4">
-              <Link
-                href={`/admin/${event.id}/bearbeiten`}
-                className="text-sm text-[#194abb] hover:underline"
-              >
-                Entwurf bearbeiten oder freigeben →
-              </Link>
-            </div>
-          )}
+          <div className="mt-6 border-t border-slate-100 pt-4">
+            <Link
+              href={`/admin/${event.id}/bearbeiten`}
+              className="text-sm text-[#194abb] hover:underline"
+            >
+              {event.status === "DRAFT" ? "Entwurf bearbeiten oder freigeben →" : "Termin bearbeiten →"}
+            </Link>
+          </div>
         </div>
       </div>
     </div>

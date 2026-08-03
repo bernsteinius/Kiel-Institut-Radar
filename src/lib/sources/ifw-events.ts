@@ -38,6 +38,11 @@ function parseIfwEvents(html: string): RawEvent[] {
     const yearMatch = block.match(/<p class="year">(\d{4})<\/p>/);
     const titleMatch = block.match(/<h3 class="event-teaser__headline[^"]*">([^<]+)<\/h3>/);
     const linkMatch = block.match(/<a href="([^"]+)" class="event-teaser__blocklink">/);
+    // Die Seite selbst ordnet jede Veranstaltung einer Reihe/einem Programm
+    // zu (z.B. "Advanced Studies Program", "Kiel Research Seminar") - das
+    // nutzen wir als "institutions", u.a. um ASP-Termine im Kalender separat
+    // ein-/ausblendbar zu machen.
+    const supertitleMatch = block.match(/<p class="event-teaser__supertitle">([^<]+)<\/p>/);
 
     if (!dayMatch || !monthMatch || !yearMatch || !titleMatch) continue;
     const monthIndex = MONTHS[monthMatch[1].trim()];
@@ -61,7 +66,7 @@ function parseIfwEvents(html: string): RawEvent[] {
         ? `https://www.kielinstitut.de${linkMatch[1]}`
         : EVENTS_URL,
       location: "Kiel Institut für Weltwirtschaft",
-      institutions: "Kiel Institut",
+      institutions: supertitleMatch ? supertitleMatch[1].trim() : "Kiel Institut",
     });
   }
 

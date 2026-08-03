@@ -24,8 +24,11 @@ export default async function AdminPage() {
       <div className="mx-auto max-w-3xl">
         <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
           <div>
+            <Link href="/" className="mb-2 inline-block text-sm text-[#194abb] hover:underline">
+              ← Zurück zum Kalender
+            </Link>
             <h1 className="mb-1 text-xl font-semibold text-slate-900">
-              Entwürfe zur Freigabe
+              Termin-Suchergebnisse zur Freigabe
             </h1>
             <p className="text-sm text-slate-500">
               Vom täglichen Job vorgeschlagene Ereignisse. Prüfen und freigeben, bevor sie im Kalender erscheinen.

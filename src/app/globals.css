@@ -42,3 +42,15 @@ body {
   --fc-button-active-bg-color: #0f2f77;
   --fc-button-active-border-color: #0f2f77;
 }
+
+/* FullCalendars eigene Ansicht-Umschalter-Buttons (Woche/Monat/2-4 Monate)
+   passen auf schmalen Bildschirmen nicht in eine Zeile und werden dort
+   abgeschnitten statt umzubrechen. Auf Mobilgeräten blenden wir sie daher
+   aus und zeigen stattdessen die eigene, umbruchfähige Button-Reihe
+   (CalendarView.tsx) - auf dem Desktop bleibt die ursprüngliche,
+   einzeilige FullCalendar-Toolbar erhalten. */
+@media (max-width: 640px) {
+  .fc-header-toolbar .fc-toolbar-chunk:last-child {
+    display: none;
+  }
+}
