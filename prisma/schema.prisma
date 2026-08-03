@@ -1,0 +1,44 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum EventCategory {
+  MONETARY_POLICY // FED, EZB, andere Zentralbanken
+  TRADE_CHINA // EU-China, Exportbeschränkungen, Handelspolitik
+  SECURITY_DEFENSE // NATO, Defence-Gipfel
+  INSTITUTIONS // G7, G20, IWF, Weltbank, EU-Gipfel
+  FISCAL_BUDGET // Haushaltsdebatten, Fiskalpolitik
+  IFW_EVENTS // Eigene Veranstaltungen des IfW Kiel
+  OTHER
+}
+
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+}
+
+model Event {
+  id          String         @id @default(cuid())
+  title       String
+  description String?
+  startDate   DateTime
+  endDate     DateTime?
+  allDay      Boolean        @default(true)
+  category    EventCategory
+  status      EventStatus    @default(DRAFT)
+  source      String?
+  sourceUrl   String?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([status])
+  @@index([startDate])
+}

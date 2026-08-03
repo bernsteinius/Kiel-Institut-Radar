@@ -1,36 +1,92 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# IfW Kiel Ereigniskalender
 
-## Getting Started
+Web-Kalender für eine geschlossene Nutzergruppe: wirtschaftspolitische Termine
+(EU, NATO, FED, IWF/Weltbank, G7 u.a.) sowie eigene IfW-Kiel-Veranstaltungen,
+farblich nach Kategorie sortiert. Zugriff über ein gemeinsames Passwort.
+Ein täglicher Job schlägt neue Ereignisse als Entwurf vor; sie erscheinen erst
+nach Freigabe unter `/admin` im öffentlichen Kalender.
 
-First, run the development server:
+## Stack
+
+- Next.js 16 (App Router) auf Vercel
+- Postgres bei [Neon](https://neon.tech) über Prisma 7
+- Session-Cookie (iron-session) für den Passwortschutz
+- Vercel Cron für den täglichen Ingestion-Job
+
+## Lokale Entwicklung
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Ohne gültige `DATABASE_URL` in `.env` funktionieren nur `/login` und die
+Proxy-Umleitung; alle Seiten, die die Datenbank abfragen (`/`, `/admin`,
+`/api/events`), brauchen eine echte Verbindung.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Deployment
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 1. GitHub-Repo anlegen
 
-## Learn More
+```bash
+git remote add origin <URL deines neuen GitHub-Repos>
+git push -u origin main
+```
 
-To learn more about Next.js, take a look at the following resources:
+(Falls noch kein Repo existiert: auf github.com ein neues, leeres Repository anlegen — ohne README/without initial commit — und die angezeigte `origin`-URL verwenden.)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 2. Neon-Datenbank anlegen
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Auf [neon.tech](https://neon.tech) kostenlos registrieren.
+2. Neues Projekt/Datenbank anlegen.
+3. Im Dashboard die **Direct connection string** kopieren (→ `DATABASE_URL`).
+   Der Prisma-Neon-Adapter verwaltet das Connection-Pooling selbst, daher
+   reicht eine einzige URL.
 
-## Deploy on Vercel
+### 3. Bei Vercel importieren
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Auf [vercel.com](https://vercel.com) mit dem GitHub-Account anmelden.
+2. "Add New… → Project" → das gerade gepushte Repo auswählen → Import.
+3. Unter "Environment Variables" eintragen (siehe `.env.example`):
+   - `DATABASE_URL` (aus Neon)
+   - `SITE_PASSWORD` (das Passwort, das die Nutzergruppe bekommt)
+   - `SESSION_SECRET` (`openssl rand -base64 32`)
+   - `CRON_SECRET` (`openssl rand -hex 16`)
+4. Deploy.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 4. Datenbankschema anlegen
+
+Einmalig, mit den echten Neon-Zugangsdaten in `.env` lokal:
+
+```bash
+npx prisma migrate dev --name init
+```
+
+Das legt die Tabellen in der Neon-Datenbank an. Bei künftigen Schema-Änderungen
+erneut `prisma migrate dev` (lokal) bzw. `prisma migrate deploy` verwenden.
+
+## Nutzung
+
+- **`/`** — Kalender (nach Login sichtbar)
+- **`/admin`** — Entwürfe aus dem täglichen Job freigeben oder verwerfen
+- **`/api/events`** — JSON-Feed der veröffentlichten Ereignisse (für den Kalender)
+- **`/api/cron/daily`** — täglicher Ingestion-Job, per `vercel.json` auf 05:00 UTC geplant,
+  nur mit `Authorization: Bearer <CRON_SECRET>` aufrufbar
+
+## Datenquellen (`src/lib/sources.ts`)
+
+Die Liste der automatischen Quellen ist aktuell leer — sie wird nach der
+Recherche zu offiziellen Kalendern (EZB, FED, EU-Rat, NATO, IWF/Weltbank,
+G7/G20, IfW-Kiel-Veranstaltungsseite) befüllt. Jede Quelle ist eine Funktion,
+die Rohdaten liefert; `src/lib/ingest.ts` dedupliziert gegen bestehende
+Einträge und legt neue als Entwurf (`status: DRAFT`) an.
+
+## Kategorien & Farben (`src/lib/categories.ts`)
+
+- Geldpolitik (FED/EZB)
+- Handel & EU-China
+- Sicherheit & Verteidigung
+- Institutionen (G7/G20/IWF/Weltbank/NATO)
+- Haushalt & Fiskalpolitik
+- IfW-Kiel-Veranstaltungen
+- Sonstiges
