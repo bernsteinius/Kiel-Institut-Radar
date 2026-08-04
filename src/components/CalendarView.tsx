@@ -13,6 +13,10 @@ import type { EventType } from "@/generated/prisma/enums";
 
 const HIDDEN_GROUPS_STORAGE_KEY = "radar-hidden-groups";
 const HIDDEN_TOPICS_STORAGE_KEY = "radar-hidden-topics";
+// Merkt sich die zuletzt angezeigte Kalenderposition (View + Datum) in
+// sessionStorage, damit ein Klick auf einen Termin und "Zurück zum Kalender"
+// wieder an derselben Stelle landet, statt beim heutigen Tag neu zu starten.
+const CALENDAR_POSITION_STORAGE_KEY = "radar-calendar-position";
 
 function renderEventContent(arg: EventContentArg) {
   const type = arg.event.extendedProps.type as EventType | undefined;
@@ -39,7 +43,22 @@ const VIEW_SWITCHER: Array<{ view: string; label: string }> = [
 export default function CalendarView() {
   const router = useRouter();
   const calendarRef = useRef<FullCalendar | null>(null);
-  const [activeView, setActiveView] = useState("multiMonthFour");
+  // Einmalig (nicht bei jedem Re-Render) die zuletzt gemerkte Kalenderposition
+  // lesen und direkt als Startposition verwenden, statt sie erst nach dem
+  // Mounten per changeView() nachträglich anzuspringen - so gibt es keinen
+  // Wettlauf mit FullCalendars eigenem initialem datesSet-Aufruf, der diese
+  // Position sonst überschreiben könnte (u.a. bei React Strict Mode im
+  // Entwicklungsmodus, das Effekte doppelt ausführt).
+  const [initialPosition] = useState<{ view: string; date: string } | null>(() => {
+    if (typeof window === "undefined") return null;
+    try {
+      const raw = sessionStorage.getItem(CALENDAR_POSITION_STORAGE_KEY);
+      return raw ? (JSON.parse(raw) as { view: string; date: string }) : null;
+    } catch {
+      return null;
+    }
+  });
+  const [activeView, setActiveView] = useState(initialPosition?.view ?? "multiMonthFour");
   const [allEvents, setAllEvents] = useState<EventInput[]>([]);
   const [hiddenGroups, setHiddenGroups] = useState<Set<VisibilityGroup>>(new Set());
   const [hiddenTopics, setHiddenTopics] = useState<Set<string>>(new Set());
@@ -230,7 +249,8 @@ export default function CalendarView() {
         <FullCalendar
           ref={calendarRef}
           plugins={[dayGridPlugin, multiMonthPlugin]}
-          initialView="multiMonthFour"
+          initialView={initialPosition?.view ?? "multiMonthFour"}
+          initialDate={initialPosition?.date}
           views={{
             multiMonthTwo: {
               type: "multiMonth",
@@ -269,7 +289,17 @@ export default function CalendarView() {
           dayMaxEvents={false}
           events={visibleEvents}
           eventContent={renderEventContent}
-          datesSet={(arg: DatesSetArg) => setActiveView(arg.view.type)}
+          datesSet={(arg: DatesSetArg) => {
+            setActiveView(arg.view.type);
+            try {
+              sessionStorage.setItem(
+                CALENDAR_POSITION_STORAGE_KEY,
+                JSON.stringify({ view: arg.view.type, date: arg.view.currentStart.toISOString() })
+              );
+            } catch {
+              // ignore
+            }
+          }}
           eventDidMount={(info) => {
             const description = info.event.extendedProps.description as
               | string
