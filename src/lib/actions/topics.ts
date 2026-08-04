@@ -49,6 +49,34 @@ export async function createTopic(
   redirect("/themen");
 }
 
+export async function updateTopic(
+  id: string,
+  _prevState: CreateTopicFormState,
+  formData: FormData
+): Promise<CreateTopicFormState> {
+  const name = String(formData.get("name") ?? "").trim();
+  const url = String(formData.get("url") ?? "").trim();
+  const categoryRaw = String(formData.get("category") ?? "");
+
+  if (!name) {
+    return { error: "Name des Themas ist erforderlich." };
+  }
+  if (!isValidUrl(url)) {
+    return { error: "Bitte eine gültige URL (http:// oder https://) angeben." };
+  }
+  if (!isEventCategory(categoryRaw)) {
+    return { error: "Bitte eine gültige Kategorie auswählen." };
+  }
+
+  await prisma.topic.update({
+    where: { id },
+    data: { name, url, category: categoryRaw },
+  });
+
+  revalidatePath("/themen");
+  redirect("/themen");
+}
+
 export async function deleteTopic(id: string) {
   await prisma.topic.delete({ where: { id } });
   revalidatePath("/themen");

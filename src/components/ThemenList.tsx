@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { CATEGORY_INFO } from "@/lib/categories";
 import { deleteTopic } from "@/lib/actions/topics";
@@ -87,14 +88,22 @@ export default function ThemenList({
                   {topic.url}
                 </a>
               </div>
-              <form action={deleteTopic.bind(null, topic.id)}>
-                <button
-                  type="submit"
+              <div className="flex shrink-0 gap-2">
+                <Link
+                  href={`/themen/${topic.id}/bearbeiten`}
                   className="rounded-md border border-slate-300 px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100"
                 >
-                  Entfernen
-                </button>
-              </form>
+                  Ändern
+                </Link>
+                <form action={deleteTopic.bind(null, topic.id)}>
+                  <button
+                    type="submit"
+                    className="rounded-md border border-slate-300 px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100"
+                  >
+                    Entfernen
+                  </button>
+                </form>
+              </div>
             </li>
           ))}
         </ul>
