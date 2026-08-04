@@ -60,41 +60,6 @@ export default function ThemenList({
 
       <div className="mb-8">
         <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
-          Automatische Quellen ({filteredBuiltIn.length})
-        </h2>
-        {filteredBuiltIn.length === 0 && (
-          <p className="text-sm text-slate-500">Keine Treffer.</p>
-        )}
-        <ul className="flex flex-col gap-3">
-          {filteredBuiltIn.map((topic) => (
-            <li
-              key={topic.name}
-              className="flex items-center justify-between gap-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm"
-            >
-              <div>
-                <p className="font-medium text-slate-900">{topic.name}</p>
-                <p className="text-xs font-medium" style={{ color: CATEGORY_INFO[topic.category].color }}>
-                  {CATEGORY_INFO[topic.category].label}
-                </p>
-                <a
-                  href={topic.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs text-slate-500 hover:underline"
-                >
-                  {topic.url}
-                </a>
-              </div>
-              <span className="shrink-0 rounded-md bg-slate-100 px-3 py-1.5 text-xs text-slate-500">
-                fest eingerichtet
-              </span>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <div>
-        <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
           Eigene Suchthemen ({filteredTopics.length})
         </h2>
         {filteredTopics.length === 0 && (
@@ -130,6 +95,41 @@ export default function ThemenList({
                   Entfernen
                 </button>
               </form>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div>
+        <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
+          Automatische Quellen ({filteredBuiltIn.length})
+        </h2>
+        {filteredBuiltIn.length === 0 && (
+          <p className="text-sm text-slate-500">Keine Treffer.</p>
+        )}
+        <ul className="flex flex-col gap-3">
+          {filteredBuiltIn.map((topic) => (
+            <li
+              key={topic.name}
+              className="flex items-center justify-between gap-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm"
+            >
+              <div>
+                <p className="font-medium text-slate-900">{topic.name}</p>
+                <p className="text-xs font-medium" style={{ color: CATEGORY_INFO[topic.category].color }}>
+                  {CATEGORY_INFO[topic.category].label}
+                </p>
+                <a
+                  href={topic.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-slate-500 hover:underline"
+                >
+                  {topic.url}
+                </a>
+              </div>
+              <span className="shrink-0 rounded-md bg-slate-100 px-3 py-1.5 text-xs text-slate-500">
+                fest eingerichtet
+              </span>
             </li>
           ))}
         </ul>

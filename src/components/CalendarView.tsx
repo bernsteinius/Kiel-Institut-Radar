@@ -170,8 +170,7 @@ export default function CalendarView() {
               return (
                 <span
                   key={type}
-                  className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-white shadow-sm"
-                  style={{ backgroundColor: info.color }}
+                  className="flex items-center gap-1.5 rounded-full bg-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700"
                 >
                   <Icon size={14} aria-hidden="true" />
                   {info.label}
