@@ -12,6 +12,7 @@ export const CATEGORY_INFO: Record<EventCategory, CategoryInfo> = {
   INSTITUTIONS: { label: "Institutionen (G7/G20/IWF/Weltbank/NATO)", color: "#0891b2" },
   FISCAL_BUDGET: { label: "Haushalt & Fiskalpolitik", color: "#d97706" },
   IFW_EVENTS: { label: "Kiel Institut Events", color: "#6a9bd8" },
+  FORSCHUNG: { label: "Forschung", color: "#16a34a" },
   OTHER: { label: "Sonstiges", color: "#64748b" },
 };
 
@@ -42,6 +43,7 @@ export const CATEGORY_ORDER: EventCategory[] = [
   "INSTITUTIONS",
   "FISCAL_BUDGET",
   "IFW_EVENTS",
+  "FORSCHUNG",
   "OTHER",
 ];
 

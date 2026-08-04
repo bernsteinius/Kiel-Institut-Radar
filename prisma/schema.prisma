@@ -17,6 +17,7 @@ enum EventCategory {
   INSTITUTIONS // G7, G20, IWF, Weltbank, EU-Gipfel
   FISCAL_BUDGET // Haushaltsdebatten, Fiskalpolitik
   IFW_EVENTS // Eigene Veranstaltungen des IfW Kiel
+  FORSCHUNG // Externe Forschungsveranstaltungen (z.B. CEPR)
   OTHER
 }
 
