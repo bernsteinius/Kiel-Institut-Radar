@@ -13,6 +13,9 @@ export const CATEGORY_INFO: Record<EventCategory, CategoryInfo> = {
   FISCAL_BUDGET: { label: "Haushalt & Fiskalpolitik", color: "#d97706" },
   IFW_EVENTS: { label: "Kiel Institut Events", color: "#6a9bd8" },
   FORSCHUNG: { label: "Forschung", color: "#16a34a" },
+  KLIMA_ENERGIE: { label: "Klima und Energie", color: "#84cc16" },
+  AFRIKA: { label: "Afrika", color: "#db2777" },
+  KONJUNKTUR: { label: "Konjunktur", color: "#4f46e5" },
   OTHER: { label: "Sonstiges", color: "#64748b" },
 };
 
@@ -44,6 +47,9 @@ export const CATEGORY_ORDER: EventCategory[] = [
   "FISCAL_BUDGET",
   "IFW_EVENTS",
   "FORSCHUNG",
+  "KLIMA_ENERGIE",
+  "AFRIKA",
+  "KONJUNKTUR",
   "OTHER",
 ];
 
