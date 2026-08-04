@@ -23,6 +23,9 @@ enum EventCategory {
 enum EventStatus {
   DRAFT
   PUBLISHED
+  /// Gelöschte Termine landen hier statt in der DB gelöscht zu werden
+  /// (siehe Papierkorb unter /papierkorb) - werden nie automatisch geleert.
+  TRASHED
 }
 
 enum EventType {

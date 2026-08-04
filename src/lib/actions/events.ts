@@ -255,3 +255,27 @@ export async function rejectEvent(id: string) {
   await prisma.event.delete({ where: { id } });
   revalidatePath("/admin");
 }
+
+/**
+ * "Löschen" verschiebt einen Termin nur in den Papierkorb (status=TRASHED)
+ * statt ihn aus der Datenbank zu entfernen - siehe /papierkorb.
+ */
+export async function trashEvent(id: string) {
+  await prisma.event.update({
+    where: { id },
+    data: { status: "TRASHED" },
+  });
+  revalidatePath("/admin");
+  revalidatePath("/");
+  revalidatePath("/papierkorb");
+  redirect("/");
+}
+
+export async function restoreEvent(id: string) {
+  await prisma.event.update({
+    where: { id },
+    data: { status: "PUBLISHED" },
+  });
+  revalidatePath("/");
+  revalidatePath("/papierkorb");
+}

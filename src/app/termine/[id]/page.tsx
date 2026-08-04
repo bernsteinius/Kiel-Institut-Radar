@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { CATEGORY_INFO, resolveEventColor } from "@/lib/categories";
 import { EVENT_TYPE_INFO } from "@/lib/event-types";
+import { restoreEvent } from "@/lib/actions/events";
+import DeleteEventButton from "@/components/DeleteEventButton";
 
 export const dynamic = "force-dynamic";
 
@@ -66,6 +68,11 @@ export default async function EventDetailPage({
             {event.status === "DRAFT" && (
               <span className="rounded-full bg-amber-100 px-2.5 py-1 text-amber-700">
                 Entwurf – noch nicht freigegeben
+              </span>
+            )}
+            {event.status === "TRASHED" && (
+              <span className="rounded-full bg-red-100 px-2.5 py-1 text-red-700">
+                Im Papierkorb
               </span>
             )}
             {event.confirmationStatus === "TENTATIVE" && (
@@ -191,13 +198,22 @@ export default async function EventDetailPage({
             </div>
           )}
 
-          <div className="mt-6 border-t border-slate-100 pt-4">
-            <Link
-              href={`/admin/${event.id}/bearbeiten`}
-              className="text-sm text-[#194abb] hover:underline"
-            >
-              {event.status === "DRAFT" ? "Entwurf bearbeiten oder freigeben →" : "Termin bearbeiten →"}
-            </Link>
+          <div className="mt-6 flex items-center justify-between border-t border-slate-100 pt-4">
+            {event.status === "TRASHED" ? (
+              <form action={restoreEvent.bind(null, event.id)}>
+                <button type="submit" className="text-sm text-[#194abb] hover:underline">
+                  Termin wiederherstellen →
+                </button>
+              </form>
+            ) : (
+              <Link
+                href={`/admin/${event.id}/bearbeiten`}
+                className="text-sm text-[#194abb] hover:underline"
+              >
+                {event.status === "DRAFT" ? "Entwurf bearbeiten oder freigeben →" : "Termin bearbeiten →"}
+              </Link>
+            )}
+            {event.status !== "TRASHED" && <DeleteEventButton id={event.id} title={event.title} />}
           </div>
         </div>
       </div>
