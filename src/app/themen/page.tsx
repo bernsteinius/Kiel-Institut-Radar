@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { CATEGORY_INFO } from "@/lib/categories";
-import { deleteTopic } from "@/lib/actions/topics";
+import { BUILT_IN_TOPICS } from "@/lib/built-in-topics";
+import ThemenList from "@/components/ThemenList";
 
 export const dynamic = "force-dynamic";
 
@@ -20,13 +20,13 @@ export default async function TopicsPage() {
               Suchthemen
             </h1>
             <p className="text-sm text-slate-500">
-              Jedes Thema wird täglich automatisch nach neuen Terminen durchsucht
-              (die angegebene Seite wird nach Datumsangaben durchsucht). Treffer
-              erscheinen als Entwurf unter{" "}
+              Jedes Thema wird täglich automatisch nach neuen Terminen durchsucht.
+              Treffer erscheinen als Entwurf unter{" "}
               <Link href="/admin" className="text-[#194abb] hover:underline">
                 Freigabe
               </Link>
-              .
+              . Automatische Quellen sind fest im Code eingerichtet und nicht
+              über diese Seite entfernbar.
             </p>
           </div>
           <Link
@@ -37,41 +37,7 @@ export default async function TopicsPage() {
           </Link>
         </div>
 
-        {topics.length === 0 && (
-          <p className="text-sm text-slate-500">Noch keine Suchthemen angelegt.</p>
-        )}
-
-        <ul className="flex flex-col gap-3">
-          {topics.map((topic) => (
-            <li
-              key={topic.id}
-              className="flex items-center justify-between gap-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm"
-            >
-              <div>
-                <p className="font-medium text-slate-900">{topic.name}</p>
-                <p className="text-xs font-medium" style={{ color: CATEGORY_INFO[topic.category].color }}>
-                  {CATEGORY_INFO[topic.category].label}
-                </p>
-                <a
-                  href={topic.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs text-slate-500 hover:underline"
-                >
-                  {topic.url}
-                </a>
-              </div>
-              <form action={deleteTopic.bind(null, topic.id)}>
-                <button
-                  type="submit"
-                  className="rounded-md border border-slate-300 px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100"
-                >
-                  Entfernen
-                </button>
-              </form>
-            </li>
-          ))}
-        </ul>
+        <ThemenList builtIn={BUILT_IN_TOPICS} topics={topics} />
       </div>
     </div>
   );
