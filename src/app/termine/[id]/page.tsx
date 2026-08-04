@@ -61,7 +61,10 @@ export default async function EventDetailPage({
             >
               {categoryInfo.label}
             </span>
-            <span className="inline-flex items-center gap-1 rounded-full border border-slate-300 px-2.5 py-1 text-slate-600">
+            <span
+              className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-white"
+              style={{ backgroundColor: typeInfo.color }}
+            >
               <Icon size={13} aria-hidden="true" />
               {typeInfo.label}
             </span>

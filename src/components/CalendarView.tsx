@@ -163,13 +163,17 @@ export default function CalendarView() {
           <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
             Termin-Typ
           </p>
-          <div className="flex flex-wrap gap-x-4 gap-y-2">
+          <div className="flex flex-wrap gap-2">
             {EVENT_TYPE_ORDER.map((type) => {
               const info = EVENT_TYPE_INFO[type];
               const Icon = info.icon;
               return (
-                <span key={type} className="flex items-center gap-1.5 text-xs text-slate-600">
-                  <Icon size={13} aria-hidden="true" />
+                <span
+                  key={type}
+                  className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-white shadow-sm"
+                  style={{ backgroundColor: info.color }}
+                >
+                  <Icon size={14} aria-hidden="true" />
                   {info.label}
                 </span>
               );
